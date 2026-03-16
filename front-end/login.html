@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            letter-spacing: -0.01em;
+        }
+        
+        .login-page-container {
+            min-height: 100vh;
+            width: 100%;
+            display: flex;
+            background-image: url('/assets/Untitled\ design\ \(1\).png'); 
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .right-section {
+            width: 60%; 
+            margin-left: auto; 
+            display: flex;
+            justify-content: center; 
+            align-items: center;
+            padding: 2rem;
+        }
+
+        /* FORM DIKECILKAN SEDIKIT AGAR LEBIH ELEGAN (480px) */
+        .form-wrapper {
+            width: 100%;
+            max-width: 480px; 
+            background: transparent;
+        }
+
+        .input-custom {
+            background-color: #f8fafc !important;
+            border: 1.5px solid #e2e8f0 !important;
+            border-radius: 16px !important;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .input-custom:focus {
+            background-color: #ffffff !important;
+            border-color: #8cc63f !important;
+            box-shadow: 0 0 0 4px rgba(140, 198, 63, 0.1);
+        }
+
+        /* Tipografi judul yang lebih modern */
+        .title-text {
+            letter-spacing: -0.04em;
+            line-height: 1.1;
+        }
+
+        @media (max-width: 1024px) {
+            .right-section { width: 70%; }
+        }
+
+        @media (max-width: 768px) {
+            .login-page-container { background-image: none; background-color: #ffffff; }
+            .right-section { width: 100%; margin-left: 0; padding: 1.5rem; }
+            .form-wrapper { max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-page-container">
+        <div class="right-section">
+            
+            <div class="form-wrapper">
+                <div class="text-center mb-10">
+                    <h1 class="text-4xl font-extrabold text-gray-900 title-text uppercase mb-3">Bine ai revenit!</h1>
+                    <p class="text-gray-500 font-medium text-base">Masukkan kredensial Anda untuk mengakses akun</p>
+                </div>
+
+                <div id="alert-container" class="mb-6 hidden">
+                    <div id="alert-message" class="p-4 rounded-xl text-sm font-semibold text-center"></div>
+                </div>
+
+                <form id="login-form" class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2 ml-1 uppercase tracking-wider">E-mail</label>
+                        <input type="email" id="email" name="email" required
+                            class="input-custom w-full px-6 py-4 text-gray-800 placeholder-gray-400 outline-none shadow-sm"
+                            placeholder="nama@email.com">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2 ml-1 uppercase tracking-wider">Parola</label>
+                        <div class="relative">
+                            <input type="password" id="password" name="password" required
+                                class="input-custom w-full px-6 py-4 text-gray-800 placeholder-gray-400 outline-none shadow-sm"
+                                placeholder="••••••••">
+                            <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-5 flex items-center">
+                                <svg id="eye-icon" class="w-5 h-5 text-gray-400 hover:text-green-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="text-right mt-3">
+                            <a href="forgot-password.html" class="text-sm font-bold text-green-600 hover:text-green-700 transition-all underline decoration-2 underline-offset-4">Lupa Password?</a>
+                        </div>
+                    </div>
+
+                    <div class="pt-4">
+                        <button type="submit" id="submit-btn"
+                            class="w-full bg-[#8cc63f] hover:bg-[#7db238] text-white font-extrabold py-4 px-8 rounded-2xl shadow-lg shadow-green-100 text-lg transition-all active:scale-[0.98] flex items-center justify-center gap-3">
+                            <span id="btn-text">MASUK</span>
+                            <svg id="btn-loader" class="w-5 h-5 animate-spin hidden" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="relative flex py-4 items-center">
+                        <div class="flex-grow border-t border-gray-200"></div>
+                        <span class="flex-shrink mx-4 text-gray-400 text-xs font-black uppercase tracking-widest">Atau</span>
+                        <div class="flex-grow border-t border-gray-200"></div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <button type="button" onclick="loginWithGoogle()" class="flex items-center justify-center gap-2 bg-white border border-gray-200 py-3 rounded-xl shadow-sm hover:bg-gray-50 transition-all font-bold text-gray-700 text-sm">
+                            <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5"> Google
+                        </button>
+                        <button type="button" onclick="loginWithFacebook()" class="flex items-center justify-center gap-2 bg-white border border-gray-200 py-3 rounded-xl shadow-sm hover:bg-gray-50 transition-all font-bold text-gray-700 text-sm">
+                            <img src="https://www.svgrepo.com/show/475647/facebook-color.svg" class="w-5 h-5"> Facebook
+                        </button>
+                    </div>
+
+                    <p class="text-center mt-8 text-sm font-medium text-gray-500">
+                        Belum punya akun? 
+                        <a href="register.html" class="font-bold text-green-600 hover:text-green-700 ml-1">Daftar Sekarang</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+<script src="auth.js"></script>
+<script>
+    function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const eyeIcon = document.getElementById('eye-icon');
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>';
+        } else {
+            passwordInput.type = 'password';
+            eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>';
+        }
+    }
+
+    window.onload = function() {
+        if (localStorage.getItem('token')) {
+            window.location.href = 'index.html';
+            return;
+        }
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        // Cek token dari URL
+        const token = urlParams.get('token');
+        if (token) {
+            localStorage.setItem('token', token);
+            fetchUserData(token);
+        }
+        
+        // Cek error dari URL
+        const error = urlParams.get('error');
+        if (error) {
+            showAlert('error', decodeURIComponent(error));
+        }
+    };
+
+    async function fetchUserData(token) {
+        try {
+            const response = await fetch('http://localhost:8000/api/user', {
+                headers: { 
+                    'Authorization': 'Bearer ' + token, 
+                    'Accept': 'application/json' 
+                }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                localStorage.setItem('user', JSON.stringify(data.user));
+                window.location.href = 'index.html';
+            } else {
+                showAlert('error', 'Gagal mengambil data user');
+            }
+        } catch (error) {
+            showAlert('error', 'Gagal mengambil data user');
+        }
+    }
+
+    document.getElementById('login-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const submitBtn = document.getElementById('submit-btn');
+        const btnText = document.getElementById('btn-text');
+        const btnLoader = document.getElementById('btn-loader');
+        
+        submitBtn.disabled = true;
+        btnText.textContent = 'MEMPROSES...';
+        btnLoader.classList.remove('hidden');
+        
+        try {
+            const response = await fetch('http://localhost:8000/api/login', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'Accept': 'application/json' 
+                },
+                body: JSON.stringify({ email, password })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                showAlert('success', 'Berhasil masuk!');
+                setTimeout(() => { window.location.href = 'index.html'; }, 1000);
+            } else {
+                showAlert('error', data.message || 'Login gagal.');
+            }
+        } catch (error) {
+            showAlert('error', 'Kesalahan server.');
+        } finally {
+            submitBtn.disabled = false;
+            btnText.textContent = 'MASUK';
+            btnLoader.classList.add('hidden');
+        }
+    });
+
+    // SATU FUNGSI showAlert (TIDAK DUPLIKASI)
+    function showAlert(type, message) {
+        const container = document.getElementById('alert-container');
+        const alertMessage = document.getElementById('alert-message');
+        
+        container.classList.remove('hidden');
+        
+        let bgColor, textColor;
+        if (type === 'success') {
+            bgColor = 'bg-green-50';
+            textColor = 'text-green-700';
+        } else if (type === 'error') {
+            bgColor = 'bg-red-50';
+            textColor = 'text-red-700';
+        } else { // info
+            bgColor = 'bg-blue-50';
+            textColor = 'text-blue-700';
+        }
+        
+        alertMessage.className = `p-4 rounded-xl text-sm font-bold ${bgColor} ${textColor}`;
+        alertMessage.textContent = message;
+        
+        setTimeout(() => { 
+            container.classList.add('hidden'); 
+        }, 4000);
+    }
+
+    // SATU FUNGSI loginWithGoogle (TIDAK DUPLIKASI)
+    function loginWithGoogle() {
+        // Tampilkan alert bahwa sedang memproses
+        showAlert('info', 'Mengarahkan ke Google...');
+        
+        try {
+            console.log('Mencoba login dengan Google...');
+            console.log('Redirect ke:', 'http://localhost:8000/google/redirect');
+            
+            // Redirect ke Google
+            window.location.href = 'http://localhost:8000/google/redirect';
+        } catch (error) {
+            console.error('Error:', error);
+            showAlert('error', 'Gagal mengarahkan ke Google: ' + error.message);
+        }
+    }
+    
+</script>
+
+</body>
+</html>

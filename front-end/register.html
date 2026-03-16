@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar - Buat Akun Baru</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            letter-spacing: -0.01em;
+        }
+        
+        .register-page-container {
+            min-height: 100vh;
+            width: 100%;
+            display: flex;
+            background-image: url('background.jpeg'); 
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .left-section {
+            width: 60%; 
+            margin-right: auto; 
+            display: flex;
+            justify-content: center; 
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .form-wrapper {
+            width: 100%;
+            max-width: 520px; 
+            background: transparent;
+        }
+
+        .input-custom {
+            background-color: #f8fafc !important;
+            border: 1.5px solid #e2e8f0 !important;
+            border-radius: 16px !important;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .input-custom:focus {
+            background-color: #ffffff !important;
+            border-color: #8cc63f !important;
+            box-shadow: 0 0 0 4px rgba(140, 198, 63, 0.1);
+        }
+
+        .title-text {
+            letter-spacing: -0.04em;
+            line-height: 1.1;
+        }
+
+        @media (max-width: 1024px) {
+            .left-section { width: 70%; }
+        }
+
+        @media (max-width: 768px) {
+            .register-page-container { 
+                background-image: none; 
+                background-color: #ffffff; 
+            }
+            .left-section { 
+                width: 100%; 
+                margin-right: 0; 
+                padding: 1.5rem; 
+            }
+            .form-wrapper { 
+                max-width: 100%; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-page-container">
+        <div class="left-section">
+            
+            <div class="form-wrapper">
+                <div class="text-center mb-8">
+                    <h1 class="text-4xl font-extrabold text-gray-900 title-text uppercase mb-3">Buat Akun Baru</h1>
+                    <p class="text-gray-500 font-medium text-base">Isi data diri Anda untuk memulai</p>
+                </div>
+
+                <div id="alert-container" class="mb-6 hidden">
+                    <div id="alert-message" class="p-4 rounded-xl text-sm font-semibold text-center"></div>
+                </div>
+
+                <form id="register-form" class="space-y-4" onsubmit="handleRegister(event)">
+                    <!-- Nama Lengkap -->
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2 ml-1 uppercase tracking-wider">Nama Lengkap</label>
+                        <input type="text" id="name" name="name" required
+                            class="input-custom w-full px-6 py-4 text-gray-800 placeholder-gray-400 outline-none shadow-sm"
+                            placeholder="Masukkan nama lengkap">
+                    </div>
+
+                    <!-- Email -->
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2 ml-1 uppercase tracking-wider">E-mail</label>
+                        <input type="email" id="email" name="email" required
+                            class="input-custom w-full px-6 py-4 text-gray-800 placeholder-gray-400 outline-none shadow-sm"
+                            placeholder="nama@email.com">
+                    </div>
+
+                    <!-- Password -->
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2 ml-1 uppercase tracking-wider">Password</label>
+                        <div class="relative">
+                            <input type="password" id="password" name="password" required
+                                class="input-custom w-full px-6 py-4 text-gray-800 placeholder-gray-400 outline-none shadow-sm"
+                                placeholder="Buat password (min. 8 karakter)">
+                            <button type="button" onclick="togglePassword('password', 'eye-icon-1')" class="absolute inset-y-0 right-5 flex items-center">
+                                <svg id="eye-icon-1" class="w-5 h-5 text-gray-400 hover:text-green-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Konfirmasi Password -->
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2 ml-1 uppercase tracking-wider">Konfirmasi Password</label>
+                        <div class="relative">
+                            <input type="password" id="password_confirmation" name="password_confirmation" required
+                                class="input-custom w-full px-6 py-4 text-gray-800 placeholder-gray-400 outline-none shadow-sm"
+                                placeholder="Ulangi password">
+                            <button type="button" onclick="togglePassword('password_confirmation', 'eye-icon-2')" class="absolute inset-y-0 right-5 flex items-center">
+                                <svg id="eye-icon-2" class="w-5 h-5 text-gray-400 hover:text-green-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tombol Daftar -->
+                    <div class="pt-2">
+                        <button type="submit" id="submit-btn"
+                            class="w-full bg-[#8cc63f] hover:bg-[#7db238] text-white font-extrabold py-4 px-8 rounded-2xl shadow-lg shadow-green-100 text-lg transition-all active:scale-[0.98] flex items-center justify-center gap-3">
+                            <span id="btn-text">DAFTAR</span>
+                            <svg id="btn-loader" class="w-5 h-5 animate-spin hidden" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Link ke Login -->
+                    <p class="text-center mt-6 text-sm font-medium text-gray-500">
+                        Sudah punya akun? 
+                        <a href="login.html" class="font-bold text-green-600 hover:text-green-700 ml-1">Masuk Sekarang</a>
+                    </p>
+
+                    <!-- Syarat & Ketentuan -->
+                    <p class="text-center text-xs text-gray-400 mt-4">
+                        Dengan mendaftar, Anda menyetujui 
+                        <a href="#" class="text-green-600 hover:underline">Syarat & Ketentuan</a> dan 
+                        <a href="#" class="text-green-600 hover:underline">Kebijakan Privasi</a> kami
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // Fungsi toggle password untuk multiple field
+    function togglePassword(inputId, iconId) {
+        const passwordInput = document.getElementById(inputId);
+        const eyeIcon = document.getElementById(iconId);
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>';
+        } else {
+            passwordInput.type = 'password';
+            eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>';
+        }
+    }
+
+    // Fungsi handle register (tanpa API)
+    function handleRegister(event) {
+        event.preventDefault();
+        
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const passwordConfirmation = document.getElementById('password_confirmation').value;
+        
+        const submitBtn = document.getElementById('submit-btn');
+        const btnText = document.getElementById('btn-text');
+        const btnLoader = document.getElementById('btn-loader');
+        
+        // Validasi password match
+        if (password !== passwordConfirmation) {
+            showAlert('error', 'Password dan konfirmasi password tidak cocok!');
+            return;
+        }
+
+        // Validasi panjang password (minimal 8 karakter)
+        if (password.length < 8) {
+            showAlert('error', 'Password minimal 8 karakter!');
+            return;
+        }
+
+        // Validasi email sederhana
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            showAlert('error', 'Format email tidak valid!');
+            return;
+        }
+
+        // Validasi nama tidak boleh kosong
+        if (name.trim().length < 3) {
+            showAlert('error', 'Nama lengkap minimal 3 karakter!');
+            return;
+        }
+        
+        // Tampilkan loading
+        submitBtn.disabled = true;
+        btnText.textContent = 'MEMPROSES...';
+        btnLoader.classList.remove('hidden');
+        
+        // Simulasi proses registrasi (tanpa API)
+        setTimeout(() => {
+            // Simpan data ke localStorage sebagai simulasi
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            
+            // Cek apakah email sudah terdaftar
+            const existingUser = users.find(user => user.email === email);
+            if (existingUser) {
+                showAlert('error', 'Email sudah terdaftar! Silakan gunakan email lain.');
+                
+                submitBtn.disabled = false;
+                btnText.textContent = 'DAFTAR';
+                btnLoader.classList.add('hidden');
+                return;
+            }
+            
+            // Tambahkan user baru
+            users.push({
+                name: name,
+                email: email,
+                password: password, // Catatan: Dalam implementasi nyata, password harus di-hash
+                registeredAt: new Date().toISOString()
+            });
+            
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            // Tampilkan pesan sukses
+            showAlert('success', 'Pendaftaran berhasil! Silakan login.');
+            
+            // Reset form
+            document.getElementById('register-form').reset();
+            
+            // Redirect ke halaman login setelah 2 detik
+            setTimeout(() => { 
+                window.location.href = 'login.html'; 
+            }, 2000);
+            
+            // Kembalikan tombol ke normal (sebenarnya tidak akan dieksekusi karena redirect)
+            submitBtn.disabled = false;
+            btnText.textContent = 'DAFTAR';
+            btnLoader.classList.add('hidden');
+        }, 1500); // Simulasi delay 1.5 detik
+    }
+
+    // Fungsi showAlert
+    function showAlert(type, message) {
+        const container = document.getElementById('alert-container');
+        const alertMessage = document.getElementById('alert-message');
+        
+        container.classList.remove('hidden');
+        
+        let bgColor, textColor;
+        if (type === 'success') {
+            bgColor = 'bg-green-50';
+            textColor = 'text-green-700';
+        } else if (type === 'error') {
+            bgColor = 'bg-red-50';
+            textColor = 'text-red-700';
+        } else {
+            bgColor = 'bg-blue-50';
+            textColor = 'text-blue-700';
+        }
+        
+        alertMessage.className = `p-4 rounded-xl text-sm font-bold ${bgColor} ${textColor}`;
+        alertMessage.textContent = message;
+        
+        setTimeout(() => { 
+            container.classList.add('hidden'); 
+        }, 4000);
+    }
+
+    // Cek apakah sudah login
+    window.onload = function() {
+        if (localStorage.getItem('token')) {
+            window.location.href = 'index.html';
+            return;
+        }
+    };
+        // Dark Mode Toggle
+        const html = document.documentElement;
+        const icon = document.getElementById('toggle-icon');
+        const checkbox = document.getElementById('dark-toggle');
+
+        function toggleDarkMode() {
+            if (checkbox.checked) {
+                html.classList.add('dark');
+                icon.innerText = '🌙';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                html.classList.remove('dark');
+                icon.innerText = '☀️';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                html.classList.add('dark');
+                checkbox.checked = true;
+                icon.innerText = '🌙';
+            }
+        }
+
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eye-icon');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>';
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>';
+            }
+        }
+
+        function toggleConfirmPassword() {
+            const passwordInput = document.getElementById('password_confirmation');
+            const eyeIcon = document.getElementById('eye-icon-confirm');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>';
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>';
+            }
+        }
+
+        // Modal Functions
+        function openTermsModal() {
+            document.getElementById('termsModal').classList.remove('hidden');
+            document.getElementById('termsModal').classList.add('flex');
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        }
+        
+        function closeTermsModal() {
+            document.getElementById('termsModal').classList.add('hidden');
+            document.getElementById('termsModal').classList.remove('flex');
+            document.body.style.overflow = 'auto'; // Restore scrolling
+        }
+        
+        function acceptTermsAndClose() {
+            const checkbox = document.getElementById('terms');
+            if (checkbox) {
+                checkbox.checked = true;
+            }
+            closeTermsModal();
+            
+            // Optional: Show success toast
+            showAlert('success', 'Terima kasih telah menyetujui Syarat & Ketentuan');
+        }
+
+        function openPrivacyModal() {
+            document.getElementById('privacyModal').classList.remove('hidden');
+            document.getElementById('privacyModal').classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closePrivacyModal() {
+            document.getElementById('privacyModal').classList.add('hidden');
+            document.getElementById('privacyModal').classList.remove('flex');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Check if user is already logged in - redirect to index
+        window.onload = function() {
+            initTheme();
+            
+            // Close modal when clicking outside
+            const termsModal = document.getElementById('termsModal');
+            const privacyModal = document.getElementById('privacyModal');
+            
+            if (termsModal) {
+                termsModal.addEventListener('click', function(e) {
+                    if (e.target === termsModal) {
+                        closeTermsModal();
+                    }
+                });
+            }
+            
+            if (privacyModal) {
+                privacyModal.addEventListener('click', function(e) {
+                    if (e.target === privacyModal) {
+                        closePrivacyModal();
+                    }
+                });
+            }
+            
+            // Check if already logged in
+            if (localStorage.getItem('token')) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            const success = urlParams.get('success');
+            const error = urlParams.get('error');
+            
+            if (token) {
+                localStorage.setItem('token', token);
+                fetchUserData(token);
+            } else if (error) {
+                showAlert('error', 'Gagal daftar dengan Google: ' + decodeURIComponent(error));
+            }
+        };
+
+        // Fetch user data after Google registration
+        async function fetchUserData(token) {
+            try {
+                const response = await fetch('http://localhost:8000/api/user', {
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    showAlert('success', 'Pendaftaran berhasil! Mengalihkan...');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1000);
+                } else {
+                    showAlert('error', 'Gagal获取用户信息');
+                }
+            } catch (error) {
+                showAlert('error', 'Pendaftaran成功但无法获取用户信息');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+            }
+        }
+
+        // Register Form Submit
+        document.getElementById('register-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Check if terms checkbox is checked
+            const termsCheckbox = document.getElementById('terms');
+            if (!termsCheckbox.checked) {
+                showAlert('error', 'Anda harus menyetujui Syarat & Ketentuan terlebih dahulu');
+                return;
+            }
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const password_confirmation = document.getElementById('password_confirmation').value;
+            
+            const submitBtn = document.getElementById('submit-btn');
+            const btnText = document.getElementById('btn-text');
+            const btnLoader = document.getElementById('btn-loader');
+            
+            // Show loading
+            submitBtn.disabled = true;
+            btnText.textContent = 'Memuat...';
+            btnLoader.classList.remove('hidden');
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ name, email, password, password_confirmation })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    showAlert('success', 'Pendaftaran berhasil! Mengalihkan...');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1000);
+                } else {
+                    let errorMessage = data.message || 'Pendaftaran gagal. Silakan coba lagi.';
+                    if (data.errors) {
+                        const firstError = Object.values(data.errors)[0];
+                        errorMessage = Array.isArray(firstError) ? firstError[0] : firstError;
+                    }
+                    showAlert('error', errorMessage);
+                }
+            } catch (error) {
+                showAlert('error', 'Terjadi kesalahan. Pastikan server backend berjalan.');
+            } finally {
+                submitBtn.disabled = false;
+                btnText.textContent = 'Daftar Sekarang';
+                btnLoader.classList.add('hidden');
+            }
+        });
+
+        function showAlert(type, message) {
+            const container = document.getElementById('alert-container');
+            const alertMessage = document.getElementById('alert-message');
+            
+            container.classList.remove('hidden');
+            if (type === 'success') {
+                alertMessage.className = 'p-4 rounded-lg text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+            } else {
+                alertMessage.className = 'p-4 rounded-lg text-sm font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+            }
+            alertMessage.textContent = message;
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                container.classList.add('hidden');
+            }, 5000);
+            
+            // Scroll to top to show alert
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function registerWithGoogle() {
+            window.location.href = 'http://localhost:8000/google/redirect';
+        }
+    </script> -->
+
+</body>
+</html>

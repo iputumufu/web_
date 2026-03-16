@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { 
+            font-family: 'Inter', sans-serif; 
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .toggle-dot { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        /* Posisi dot saat dicentang (Dark Mode) */
+        input:checked ~ .toggle-dot { 
+            transform: translateX(1.25rem); 
+        }
+
+nav{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: var(--nav-bg);
+    color: var(--nav-text);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+ul {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+}
