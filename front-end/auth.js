@@ -1,12 +1,26 @@
 // Authentication functions for frontend
 
 const API_URL = 'http://localhost:8000/api';
+const OAUTH_BASE_URL = 'http://localhost:8000';
+
+function getFrontendBaseUrl() {
+    const currentPath = window.location.pathname;
+    const lastSlashIndex = currentPath.lastIndexOf('/');
+    const basePath = lastSlashIndex >= 0 ? currentPath.slice(0, lastSlashIndex) : '';
+
+    return `${window.location.origin}${basePath}`;
+}
+
+function redirectToOAuth(provider) {
+    const frontendUrl = encodeURIComponent(getFrontendBaseUrl());
+    window.location.href = `${OAUTH_BASE_URL}/${provider}/redirect?frontend_url=${frontendUrl}`;
+}
 
 /**
  * Check if user is logged in
  */
 function isLoggedIn() {
-    return !!localStorage.getItem('token');
+    return !!localStorage.getItem('token') && !!localStorage.getItem('user');
 }
 
 /**
@@ -133,12 +147,25 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle OAuth token from URL
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
-    if (token) {
+    const resetEmail = urlParams.get('email');
+    const isResetPasswordPage = window.location.pathname.includes('reset-password.html');
+    const hasResetPasswordParams = isResetPasswordPage && token && resetEmail;
+    if (token && !hasResetPasswordParams) {
+        localStorage.setItem('token', token);
         fetchUserData(token);
     }
     
     // Redirect if logged in on auth pages
-    if (isLoggedIn() && (window.location.pathname.includes('login.html') || window.location.pathname.includes('register.html') || window.location.pathname.includes('forgot-password.html') || window.location.pathname.includes('reset-password.html'))) {
+    if (
+        isLoggedIn() &&
+        !hasResetPasswordParams &&
+        (
+            window.location.pathname.includes('login.html') ||
+            window.location.pathname.includes('register.html') ||
+            window.location.pathname.includes('forgot-password.html') ||
+            window.location.pathname.includes('reset-password.html')
+        )
+    ) {
         window.location.href = 'index.html';
     }
     
@@ -186,26 +213,26 @@ async function resetPassword(token, email, password, passwordConfirmation) {
  * Login with Google
  */
 function loginWithGoogle() {
-    window.location.href = 'http://localhost:8000/google/redirect';
+    redirectToOAuth('google');
 }
 
 /**
  * Login with Facebook
  */
 function loginWithFacebook() {
-    window.location.href = 'http://localhost:8000/facebook/redirect';
+    redirectToOAuth('facebook');
 }
 
 /**
  * Register with Google
  */
 function registerWithGoogle() {
-    window.location.href = 'http://localhost:8000/google/redirect';
+    redirectToOAuth('google');
 }
 
 /**
  * Register with Facebook
  */
 function registerWithFacebook() {
-    window.location.href = 'http://localhost:8000/facebook/redirect';
+    redirectToOAuth('facebook');
 }

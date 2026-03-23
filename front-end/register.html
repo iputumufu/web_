@@ -91,7 +91,7 @@
                     <div id="alert-message" class="p-4 rounded-xl text-sm font-semibold text-center"></div>
                 </div>
 
-                <form id="register-form" class="space-y-4" onsubmit="handleRegister(event)">
+                <form id="register-form" class="space-y-4">
                     <!-- Nama Lengkap -->
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2 ml-1 uppercase tracking-wider">Nama Lengkap</label>
@@ -184,133 +184,16 @@
         }
     }
 
-    // Fungsi handle register (tanpa API)
-    function handleRegister(event) {
-        event.preventDefault();
-        
-        const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const passwordConfirmation = document.getElementById('password_confirmation').value;
-        
-        const submitBtn = document.getElementById('submit-btn');
-        const btnText = document.getElementById('btn-text');
-        const btnLoader = document.getElementById('btn-loader');
-        
-        // Validasi password match
-        if (password !== passwordConfirmation) {
-            showAlert('error', 'Password dan konfirmasi password tidak cocok!');
-            return;
-        }
-
-        // Validasi panjang password (minimal 8 karakter)
-        if (password.length < 8) {
-            showAlert('error', 'Password minimal 8 karakter!');
-            return;
-        }
-
-        // Validasi email sederhana
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            showAlert('error', 'Format email tidak valid!');
-            return;
-        }
-
-        // Validasi nama tidak boleh kosong
-        if (name.trim().length < 3) {
-            showAlert('error', 'Nama lengkap minimal 3 karakter!');
-            return;
-        }
-        
-        // Tampilkan loading
-        submitBtn.disabled = true;
-        btnText.textContent = 'MEMPROSES...';
-        btnLoader.classList.remove('hidden');
-        
-        // Simulasi proses registrasi (tanpa API)
-        setTimeout(() => {
-            // Simpan data ke localStorage sebagai simulasi
-            const users = JSON.parse(localStorage.getItem('users') || '[]');
-            
-            // Cek apakah email sudah terdaftar
-            const existingUser = users.find(user => user.email === email);
-            if (existingUser) {
-                showAlert('error', 'Email sudah terdaftar! Silakan gunakan email lain.');
-                
-                submitBtn.disabled = false;
-                btnText.textContent = 'DAFTAR';
-                btnLoader.classList.add('hidden');
-                return;
-            }
-            
-            // Tambahkan user baru
-            users.push({
-                name: name,
-                email: email,
-                password: password, // Catatan: Dalam implementasi nyata, password harus di-hash
-                registeredAt: new Date().toISOString()
-            });
-            
-            localStorage.setItem('users', JSON.stringify(users));
-            
-            // Tampilkan pesan sukses
-            showAlert('success', 'Pendaftaran berhasil! Silakan login.');
-            
-            // Reset form
-            document.getElementById('register-form').reset();
-            
-            // Redirect ke halaman login setelah 2 detik
-            setTimeout(() => { 
-                window.location.href = 'login.html'; 
-            }, 2000);
-            
-            // Kembalikan tombol ke normal (sebenarnya tidak akan dieksekusi karena redirect)
-            submitBtn.disabled = false;
-            btnText.textContent = 'DAFTAR';
-            btnLoader.classList.add('hidden');
-        }, 1500); // Simulasi delay 1.5 detik
-    }
-
-    // Fungsi showAlert
-    function showAlert(type, message) {
-        const container = document.getElementById('alert-container');
-        const alertMessage = document.getElementById('alert-message');
-        
-        container.classList.remove('hidden');
-        
-        let bgColor, textColor;
-        if (type === 'success') {
-            bgColor = 'bg-green-50';
-            textColor = 'text-green-700';
-        } else if (type === 'error') {
-            bgColor = 'bg-red-50';
-            textColor = 'text-red-700';
-        } else {
-            bgColor = 'bg-blue-50';
-            textColor = 'text-blue-700';
-        }
-        
-        alertMessage.className = `p-4 rounded-xl text-sm font-bold ${bgColor} ${textColor}`;
-        alertMessage.textContent = message;
-        
-        setTimeout(() => { 
-            container.classList.add('hidden'); 
-        }, 4000);
-    }
-
-    // Cek apakah sudah login
-    window.onload = function() {
-        if (localStorage.getItem('token')) {
-            window.location.href = 'index.html';
-            return;
-        }
-    };
         // Dark Mode Toggle
         const html = document.documentElement;
         const icon = document.getElementById('toggle-icon');
         const checkbox = document.getElementById('dark-toggle');
 
         function toggleDarkMode() {
+            if (!checkbox || !icon) {
+                return;
+            }
+
             if (checkbox.checked) {
                 html.classList.add('dark');
                 icon.innerText = '🌙';
@@ -323,6 +206,10 @@
         }
 
         function initTheme() {
+            if (!checkbox || !icon) {
+                return;
+            }
+
             const savedTheme = localStorage.getItem('theme');
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
@@ -417,14 +304,13 @@
             }
             
             // Check if already logged in
-            if (localStorage.getItem('token')) {
+            if (localStorage.getItem('token') && localStorage.getItem('user')) {
                 window.location.href = 'index.html';
                 return;
             }
             
             const urlParams = new URLSearchParams(window.location.search);
             const token = urlParams.get('token');
-            const success = urlParams.get('success');
             const error = urlParams.get('error');
             
             if (token) {
@@ -467,15 +353,14 @@
         document.getElementById('register-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // Check if terms checkbox is checked
             const termsCheckbox = document.getElementById('terms');
-            if (!termsCheckbox.checked) {
+            if (termsCheckbox && !termsCheckbox.checked) {
                 showAlert('error', 'Anda harus menyetujui Syarat & Ketentuan terlebih dahulu');
                 return;
             }
             
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim().toLowerCase();
             const password = document.getElementById('password').value;
             const password_confirmation = document.getElementById('password_confirmation').value;
             
@@ -501,12 +386,14 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    localStorage.setItem('token', data.token);
-                    localStorage.setItem('user', JSON.stringify(data.user));
-                    showAlert('success', 'Pendaftaran berhasil! Mengalihkan...');
+                    showAlert('success', 'Pendaftaran berhasil! Mengalihkan ke halaman login...');
                     setTimeout(() => {
-                        window.location.href = 'index.html';
-                    }, 1000);
+                        const params = new URLSearchParams({
+                            registered: '1',
+                            email,
+                        });
+                        window.location.href = `login.html?${params.toString()}`;
+                    }, 1200);
                 } else {
                     let errorMessage = data.message || 'Pendaftaran gagal. Silakan coba lagi.';
                     if (data.errors) {
@@ -545,8 +432,17 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        function getFrontendBaseUrl() {
+            const currentPath = window.location.pathname;
+            const lastSlashIndex = currentPath.lastIndexOf('/');
+            const basePath = lastSlashIndex >= 0 ? currentPath.slice(0, lastSlashIndex) : '';
+
+            return `${window.location.origin}${basePath}`;
+        }
+
         function registerWithGoogle() {
-            window.location.href = 'http://localhost:8000/google/redirect';
+            const frontendUrl = encodeURIComponent(getFrontendBaseUrl());
+            window.location.href = `http://localhost:8000/google/redirect?frontend_url=${frontendUrl}`;
         }
     </script> -->
 

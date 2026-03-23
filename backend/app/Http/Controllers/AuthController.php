@@ -17,10 +17,17 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
+        $request->merge([
+            'email' => strtolower(trim((string) $request->email)),
+        ]);
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => ['required', 'confirmed', RulesPassword::defaults()],
+        ], [
+            'email.unique' => 'Email sudah terdaftar. Silakan login atau gunakan email lain.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
         ]);
 
         if ($validator->fails()) {
@@ -52,6 +59,10 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
+        $request->merge([
+            'email' => strtolower(trim((string) $request->email)),
+        ]);
+
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required',
@@ -70,7 +81,7 @@ class AuthController extends Controller
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid credentials'
+                'message' => 'Email atau password salah.'
             ], 401);
         }
 
@@ -140,6 +151,10 @@ class AuthController extends Controller
      */
     public function forgotPassword(Request $request)
     {
+        $request->merge([
+            'email' => strtolower(trim((string) $request->email)),
+        ]);
+
         $validator = Validator::make($request->all(), [
             'email' => 'required|email|exists:users,email',
         ]);
@@ -152,25 +167,30 @@ class AuthController extends Controller
             ], 422);
         }
 
-        // Get the user
-        $user = User::where('email', $request->email)->first();
-        
-        // Generate reset token
-        $token = app('auth.password.broker')->createToken($user);
+        try {
+            $status = Password::sendResetLink([
+                'email' => $request->email,
+            ]);
 
-        // For development: return the reset link in response
-        // In production: this would send an email
-        $resetLink = config('app.frontend_url') . '/reset-password.html?token=' . $token . '&email=' . urlencode($request->email);
-        
-        // Log the reset link for development purposes
-        \Log::info('Password Reset Link (Development): ' . $resetLink);
+            if ($status !== Password::RESET_LINK_SENT) {
+                return response()->json([
+                    'success' => false,
+                    'message' => __($status),
+                ], 500);
+            }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Password reset link sent to your email',
-            'dev_reset_link' => $resetLink, // Remove this in production
-            'dev_note' => 'For development, use the reset link above'
-        ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Link reset password telah dikirim ke email Anda.',
+            ]);
+        } catch (\Throwable $e) {
+            \Log::error('Forgot password email error: '.$e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengirim email reset password. Periksa konfigurasi email server.',
+            ], 500);
+        }
     }
 
     /**
@@ -214,4 +234,3 @@ class AuthController extends Controller
         ], 500);
     }
 }
-

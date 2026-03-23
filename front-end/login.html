@@ -162,7 +162,7 @@
     }
 
     window.onload = function() {
-        if (localStorage.getItem('token')) {
+        if (localStorage.getItem('token') && localStorage.getItem('user')) {
             window.location.href = 'index.html';
             return;
         }
@@ -174,6 +174,16 @@
         if (token) {
             localStorage.setItem('token', token);
             fetchUserData(token);
+        }
+
+        const registered = urlParams.get('registered');
+        const email = urlParams.get('email');
+        if (email) {
+            document.getElementById('email').value = decodeURIComponent(email);
+        }
+
+        if (registered === '1') {
+            showAlert('success', 'Akun berhasil dibuat. Silakan login.');
         }
         
         // Cek error dari URL
@@ -207,7 +217,7 @@
     document.getElementById('login-form').addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        const email = document.getElementById('email').value;
+        const email = document.getElementById('email').value.trim().toLowerCase();
         const password = document.getElementById('password').value;
         const submitBtn = document.getElementById('submit-btn');
         const btnText = document.getElementById('btn-text');
@@ -273,6 +283,19 @@
         }, 4000);
     }
 
+    function getFrontendBaseUrl() {
+        const currentPath = window.location.pathname;
+        const lastSlashIndex = currentPath.lastIndexOf('/');
+        const basePath = lastSlashIndex >= 0 ? currentPath.slice(0, lastSlashIndex) : '';
+
+        return `${window.location.origin}${basePath}`;
+    }
+
+    function redirectToOAuth(provider) {
+        const frontendUrl = encodeURIComponent(getFrontendBaseUrl());
+        window.location.href = `http://localhost:8000/${provider}/redirect?frontend_url=${frontendUrl}`;
+    }
+
     // SATU FUNGSI loginWithGoogle (TIDAK DUPLIKASI)
     function loginWithGoogle() {
         // Tampilkan alert bahwa sedang memproses
@@ -282,10 +305,20 @@
         try {
             console.log('Mencoba login dengan Google...');
             // Redirect ke Google OAuth
-            window.location.href = 'http://localhost:8000/google/redirect';
+            redirectToOAuth('google');
         } catch (error) {
             console.error('Error:', error);
             showAlert('error', 'Gagal mengarahkan ke Google: ' + error.message);
+        }
+    }
+
+    function loginWithFacebook() {
+        try {
+            console.log('Mencoba login dengan Facebook...');
+            redirectToOAuth('facebook');
+        } catch (error) {
+            console.error('Error:', error);
+            showAlert('error', 'Gagal mengarahkan ke Facebook: ' + error.message);
         }
     }
     
