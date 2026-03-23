@@ -18,9 +18,8 @@ class FacebookAuthController extends Controller
     {
         $scopes = ['email', 'public_profile'];
         
-        return Socialite::driver('facebook')
+return Socialite::driver('facebook')
             ->scopes($scopes)
-            ->stateless()
             ->redirect();
     }
 
@@ -30,7 +29,7 @@ class FacebookAuthController extends Controller
     public function handleFacebookCallback()
     {
         try {
-            $facebookUser = Socialite::driver('facebook')->stateless()->user();
+$facebookUser = Socialite::driver('facebook')->user();
 
             // Find or create user by email or facebook_id
             $user = User::where('email', $facebookUser->getEmail())

@@ -276,13 +276,12 @@
     // SATU FUNGSI loginWithGoogle (TIDAK DUPLIKASI)
     function loginWithGoogle() {
         // Tampilkan alert bahwa sedang memproses
-        showAlert('info', 'Mengarahkan ke Google...');
+// showAlert('info', 'Mengarahkan ke Google...'); // Removed for instant redirect
+
         
         try {
             console.log('Mencoba login dengan Google...');
-            console.log('Redirect ke:', 'http://localhost:8000/google/redirect');
-            
-            // Redirect ke Google
+            // Redirect ke Google OAuth
             window.location.href = 'http://localhost:8000/google/redirect';
         } catch (error) {
             console.error('Error:', error);

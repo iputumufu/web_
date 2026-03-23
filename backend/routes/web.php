@@ -17,3 +17,4 @@ Route::middleware(['web'])->group(function () {
     Route::get('/facebook/redirect', [FacebookAuthController::class, 'redirectToFacebook']);
     Route::get('/facebook/callback', [FacebookAuthController::class, 'handleFacebookCallback']);
 });
+

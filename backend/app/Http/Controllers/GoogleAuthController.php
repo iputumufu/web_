@@ -23,7 +23,6 @@ class GoogleAuthController extends Controller
         
         return Socialite::driver('google')
             ->scopes($scopes)
-            ->stateless()
             ->redirect();
     }
 
@@ -33,7 +32,7 @@ class GoogleAuthController extends Controller
     public function handleGoogleCallback()
     {
         try {
-$googleUser = Socialite::driver('google')->stateless()->user();
+$googleUser = Socialite::driver('google')->user();
 
             // Find or create user by email or google_id
             $user = User::where('email', $googleUser->email)
