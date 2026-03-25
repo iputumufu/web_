@@ -18,7 +18,7 @@
             min-height: 100vh;
             width: 100%;
             display: flex;
-            background-image: url('../assets/REGISTER.jpeg'); 
+            background-image: linear-gradient(rgba(0,0,0,0.34), rgba(0,0,0,0.34)), url('../assets/Registerbg.jpg'); 
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -31,12 +31,14 @@
             justify-content: center; 
             align-items: center;
             padding: 2rem;
+            transform: translateX(-30px);
         }
 
         .form-wrapper {
             width: 100%;
             max-width: 520px; 
             background: transparent;
+            margin-right: 18rem;
         }
 
         .input-custom {
@@ -55,10 +57,6 @@
         .title-text {
             letter-spacing: -0.04em;
             line-height: 1.1;
-        }
-
-        @media (max-width: 1024px) {
-            .left-section { width: 70%; }
         }
 
         @media (max-width: 768px) {
@@ -80,11 +78,10 @@
 <body>
     <div class="register-page-container">
         <div class="left-section">
-            
             <div class="form-wrapper">
                 <div class="text-center mb-8">
-                    <h1 class="text-4xl font-extrabold text-gray-900 title-text uppercase mb-3">Buat Akun Baru</h1>
-                    <p class="text-gray-500 font-medium text-base">Isi data diri Anda untuk memulai</p>
+                    <h1 class="text-4xl font-extrabold text-white title-text uppercase mb-3">Buat Akun Baru</h1>
+                    <p class="text-white/85 font-medium text-base">Isi data diri Anda untuk memulai</p>
                 </div>
 
                 <div id="alert-container" class="mb-6 hidden">
@@ -94,26 +91,26 @@
                 <form id="register-form" class="space-y-4">
                     <!-- Nama Lengkap -->
                     <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-2 ml-1 uppercase tracking-wider">Nama Lengkap</label>
+                        <label class="block text-sm font-bold text-white mb-2 ml-1 uppercase tracking-wider">Nama Lengkap</label>
                         <input type="text" id="name" name="name" required
-                            class="input-custom w-full px-6 py-4 text-gray-800 placeholder-gray-400 outline-none shadow-sm"
+                            class="input-custom w-full px-6 py-4 text-gray-800 placeholder-gray-400 outline-none"
                             placeholder="Masukkan nama lengkap">
                     </div>
 
                     <!-- Email -->
                     <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-2 ml-1 uppercase tracking-wider">E-mail</label>
+                        <label class="block text-sm font-bold text-white mb-2 ml-1 uppercase tracking-wider">E-mail</label>
                         <input type="email" id="email" name="email" required
-                            class="input-custom w-full px-6 py-4 text-gray-800 placeholder-gray-400 outline-none shadow-sm"
+                            class="input-custom w-full px-6 py-4 text-gray-800 placeholder-gray-400 outline-none"
                             placeholder="nama@email.com">
                     </div>
 
                     <!-- Password -->
                     <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-2 ml-1 uppercase tracking-wider">Password</label>
+                        <label class="block text-sm font-bold text-white mb-2 ml-1 uppercase tracking-wider">Password</label>
                         <div class="relative">
                             <input type="password" id="password" name="password" required
-                                class="input-custom w-full px-6 py-4 text-gray-800 placeholder-gray-400 outline-none shadow-sm"
+                                class="input-custom w-full px-6 py-4 text-gray-800 placeholder-gray-400 outline-none"
                                 placeholder="Buat password (min. 8 karakter)">
                             <button type="button" onclick="togglePassword('password', 'eye-icon-1')" class="absolute inset-y-0 right-5 flex items-center">
                                 <svg id="eye-icon-1" class="w-5 h-5 text-gray-400 hover:text-green-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -126,10 +123,10 @@
 
                     <!-- Konfirmasi Password -->
                     <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-2 ml-1 uppercase tracking-wider">Konfirmasi Password</label>
+                        <label class="block text-sm font-bold text-white mb-2 ml-1 uppercase tracking-wider">Konfirmasi Password</label>
                         <div class="relative">
                             <input type="password" id="password_confirmation" name="password_confirmation" required
-                                class="input-custom w-full px-6 py-4 text-gray-800 placeholder-gray-400 outline-none shadow-sm"
+                                class="input-custom w-full px-6 py-4 text-gray-800 placeholder-gray-400 outline-none"
                                 placeholder="Ulangi password">
                             <button type="button" onclick="togglePassword('password_confirmation', 'eye-icon-2')" class="absolute inset-y-0 right-5 flex items-center">
                                 <svg id="eye-icon-2" class="w-5 h-5 text-gray-400 hover:text-green-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -143,7 +140,7 @@
                     <!-- Tombol Daftar -->
                     <div class="pt-2">
                         <button type="submit" id="submit-btn"
-                            class="w-full bg-[#8cc63f] hover:bg-[#7db238] text-white font-extrabold py-4 px-8 rounded-2xl shadow-lg shadow-green-100 text-lg transition-all active:scale-[0.98] flex items-center justify-center gap-3">
+                            class="w-full bg-[#8cc63f] hover:bg-[#7db238] text-white font-extrabold py-4 px-8 rounded-2xl text-lg transition-all active:scale-[0.98] flex items-center justify-center gap-3">
                             <span id="btn-text">DAFTAR</span>
                             <svg id="btn-loader" class="w-5 h-5 animate-spin hidden" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -153,13 +150,13 @@
                     </div>
 
                     <!-- Link ke Login -->
-                    <p class="text-center mt-6 text-sm font-medium text-gray-500">
+                    <p class="text-center mt-6 text-sm font-medium text-white/85">
                         Sudah punya akun? 
                         <a href="login.html" class="font-bold text-green-600 hover:text-green-700 ml-1">Masuk Sekarang</a>
                     </p>
 
                     <!-- Syarat & Ketentuan -->
-                    <p class="text-center text-xs text-gray-400 mt-4">
+                    <p class="text-center text-xs text-white/75 mt-4">
                         Dengan mendaftar, Anda menyetujui 
                         <a href="#" class="text-green-600 hover:underline">Syarat & Ketentuan</a> dan 
                         <a href="#" class="text-green-600 hover:underline">Kebijakan Privasi</a> kami
