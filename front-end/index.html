@@ -91,10 +91,170 @@
         </nav>
     </header>
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        
+        <section class="hero-section" id="Beranda">
+            <div class="hero-copy">
+                <p class="eyebrow">Customer Service Resep Masakan</p>
+                <h1>Masak lebih cepat dengan CS resep yang bisa diajak ngobrol.</h1>
+                <p class="hero-text">
+                    Tanyakan bahan yang ada di rumah, minta ide menu harian, cari pengganti bahan, atau minta langkah masak yang lebih sederhana.
+                </p>
+                <div class="hero-actions">
+                    <a href="#recipe-cs" class="hero-button primary-button">Mulai Konsultasi</a>
+                    <a href="#Rekomendasi" class="hero-button secondary-button">Lihat Ide Menu</a>
+                </div>
+                <div class="feature-pills">
+                    <span>Resep hemat</span>
+                    <span>Menu harian</span>
+                    <span>Substitusi bahan</span>
+                    <span>Langkah praktis</span>
+                </div>
+            </div>
+            <aside class="hero-panel">
+                <h2>Layanan yang bisa dibantu</h2>
+                <ul class="service-list">
+                    <li>Rekomendasi resep dari bahan yang tersedia</li>
+                    <li>Estimasi porsi, waktu masak, dan urutan langkah</li>
+                    <li>Saran saus, topping, dan pelengkap</li>
+                    <li>Alternatif resep tanpa santan, telur, atau gluten</li>
+                </ul>
+            </aside>
+        </section>
+
+        <section class="recommendation-section" id="Rekomendasi">
+            <article class="recommendation-card">
+                <h3>Sarapan cepat</h3>
+                <p>Roti, telur, susu, dan keju bisa diubah jadi menu 10 menit tanpa ribet.</p>
+            </article>
+            <article class="recommendation-card">
+                <h3>Menu anak kos</h3>
+                <p>Masakan satu wajan dengan bahan murah, sedikit alat, dan rasa tetap enak.</p>
+            </article>
+            <article class="recommendation-card">
+                <h3>Masak buat keluarga</h3>
+                <p>Cari resep porsi 4-6 orang lengkap dengan lauk, sayur, dan sambal pendamping.</p>
+            </article>
+        </section>
+
+        <section class="chat-section" id="recipe-cs">
+            <div class="chat-overlay" id="chat-overlay" hidden></div>
+            <div class="chat-shell chat-app-frame">
+                <div class="support-layout">
+                    <aside class="support-sidebar">
+                        <div class="support-brand">
+                            <span class="support-brand-badge">MY</span>
+                            <div>
+                                <strong>Masak Yuk</strong>
+                                <p>Recipe support</p>
+                            </div>
+                        </div>
+                        <div class="support-sidebar-group">
+                            <p class="support-sidebar-label">Navigasi</p>
+                            <div class="chat-tabs sidebar-tabs" role="tablist" aria-label="Mode customer service">
+                                <button type="button" class="chat-tab active" data-tab-target="chat-panel" aria-selected="true"><span class="tab-icon">💬</span><span>Chat</span></button>
+                                <button type="button" class="chat-tab" data-tab-target="history-panel" aria-selected="false"><span class="tab-icon">🕘</span><span>Riwayat</span></button>
+                            </div>
+                        </div>
+                        <div class="support-sidebar-card">
+                            <p class="support-sidebar-label">Status</p>
+                            <strong>Asisten aktif</strong>
+                            <p>Siap bantu resep, bahan pengganti, dan ide menu cepat.</p>
+                        </div>
+                    </aside>
+
+                    <div class="support-content">
+                        <div class="chat-toolbar">
+                            <div class="chat-toolbar-copy">
+                                <strong>Customer service resep</strong>
+                                <p>Chat seperti live support, tapi fokus untuk kebutuhan masak harian.</p>
+                            </div>
+                            <div class="chat-toolbar-actions" aria-hidden="true">
+                                <span class="toolbar-icon">✦</span>
+                                <span class="toolbar-icon">📝</span>
+                                <span class="toolbar-icon">↗</span>
+                                <button type="button" class="chat-close-button" id="chat-close-button" aria-label="Tutup chat">×</button>
+                            </div>
+                        </div>
+
+                        <div class="system-notices">
+                            <article class="notice-card notice-warning">
+                                <div class="notice-icon">!</div>
+                                <div>
+                                    <strong>Koneksi AI</strong>
+                                    <p id="server-notice-text">Pastikan backend Laravel aktif di `http://127.0.0.1:8000` agar chat bisa membalas.</p>
+                                </div>
+                                <button type="button" class="notice-close" data-close-parent aria-label="Tutup notifikasi">×</button>
+                            </article>
+                            <article class="notice-card notice-neutral">
+                                <div class="notice-icon">i</div>
+                                <div>
+                                    <strong>Panduan penggunaan</strong>
+                                    <p>Sebutkan bahan, porsi, atau gaya masakan yang kamu mau. Contoh: "ayam + kentang buat 3 orang".</p>
+                                </div>
+                                <button type="button" class="notice-close" data-close-parent aria-label="Tutup notifikasi">×</button>
+                            </article>
+                        </div>
+
+                        <div id="chat-panel" class="chat-panel active" role="tabpanel">
+                            <div id="chat-messages" class="chat-messages" aria-live="polite"></div>
+                            <div class="quick-prompts" id="quick-prompts">
+                                <button type="button" class="prompt-chip">Bahan di rumah ada ayam, bawang, dan kecap. Bisa masak apa?</button>
+                                <button type="button" class="prompt-chip">Buatkan resep makan malam untuk 4 orang yang hemat.</button>
+                                <button type="button" class="prompt-chip">Apa pengganti santan untuk sayur berkuah?</button>
+                            </div>
+                            <article class="rating-card">
+                                <div class="rating-mark">✦</div>
+                                <div>
+                                    <strong>Bantu tingkatkan layanan resep</strong>
+                                    <p>Setelah mencoba, kamu bisa nilai kualitas jawaban agar CS makin akurat.</p>
+                                </div>
+                                <div class="rating-emojis" aria-label="Rating cepat">
+                                    <button type="button">😕</button>
+                                    <button type="button">🙁</button>
+                                    <button type="button">🙂</button>
+                                    <button type="button">😀</button>
+                                    <button type="button">🤩</button>
+                                </div>
+                            </article>
+                            <form id="chat-form" class="chat-form chat-composer">
+                                <label for="chat-input" class="sr-only">Tulis pertanyaan resep</label>
+                                <div class="composer-shell">
+                                    <textarea id="chat-input" rows="2" placeholder="Tulis pertanyaan Anda" required></textarea>
+                                    <div class="composer-actions">
+                                        <button type="button" class="composer-icon-button" id="chat-plus" aria-label="Contoh pertanyaan">+</button>
+                                        <button type="submit" id="chat-submit" class="composer-send-button" aria-label="Kirim pertanyaan">
+                                            <span>➜</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <p id="chat-feedback" class="chat-feedback">Backend akan memanggil AI lewat endpoint aman.</p>
+                            </form>
+                        </div>
+
+                        <div id="history-panel" class="chat-panel history-panel" role="tabpanel" hidden>
+                            <div class="history-header">
+                                <strong>Riwayat percakapan</strong>
+                                <p>Percakapan terakhir disimpan di browser ini.</p>
+                            </div>
+                            <div id="history-list" class="history-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
+    <div class="floating-chat-cta" id="floating-chat-cta">
+        <button type="button" class="floating-chat-label" id="floating-chat-label">
+            <span>Chat with us</span>
+            <span class="floating-wave">👋</span>
+        </button>
+        <button type="button" class="floating-chat-button" id="floating-chat-button" aria-label="Buka customer service resep">
+            <span class="floating-chat-icon">💬</span>
+        </button>
+    </div>
+
     <script src="auth.js"></script>
+    <script src="recipe-assistant.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Update navbar auth state first
@@ -141,6 +301,5 @@
             initTheme();
         });
     </script>
-
 </body>
 </html>

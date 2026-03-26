@@ -47,5 +47,12 @@ return [
         'redirect' => env('FACEBOOK_REDIRECT_URI', 'http://localhost:8000/facebook/callback'),
     ],
 
-];
+    'openrouter' => [
+        'api_key' => env('OPENROUTER_API_KEY'),
+        'models' => array_values(array_filter(array_map(
+            'trim',
+            explode(',', env('OPENROUTER_MODELS', env('OPENROUTER_MODEL', 'meta-llama/llama-3.3-8b-instruct:free,google/gemini-2.0-flash-exp:free,openai/gpt-4o-mini')))
+        ))),
+    ],
 
+];
