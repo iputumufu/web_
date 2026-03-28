@@ -3,33 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile - Sekolah Kita</title>
+    <title>Profile - MasakYuk</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5B7A52',
+                        'primary-dark': '#45603f',
+                        cream: '#fbf6ef',
+                        ink: '#243126',
+                    }
+                }
+            }
         }
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(91, 122, 82, 0.08), transparent 26%),
+                linear-gradient(180deg, #fffaf5 0%, #fbf6ef 100%);
+        }
         .toggle-dot { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         input:checked ~ .toggle-dot { transform: translateX(1.25rem); }
         .input-focus:focus {
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+            box-shadow: 0 0 0 3px rgba(91, 122, 82, 0.14);
+        }
+        .profile-pattern {
+            background-image:
+                radial-gradient(rgba(240, 194, 125, 0.22) 1.2px, transparent 1.2px),
+                radial-gradient(rgba(91, 122, 82, 0.06) 1px, transparent 1px);
+            background-size: 24px 24px, 48px 48px;
+            background-position: 0 0, 12px 12px;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid rgba(91, 122, 82, 0.08);
+            box-shadow: 0 24px 60px rgba(80, 63, 36, 0.08);
+        }
+        .stat-card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(249,250,247,0.92));
+            border: 1px solid rgba(91, 122, 82, 0.08);
+            box-shadow: 0 16px 36px rgba(80, 63, 36, 0.08);
+        }
+        .profile-tab.active {
+            background: #6c995d;
+            color: #fff;
+            box-shadow: 0 10px 28px rgba(108, 153, 93, 0.24);
+        }
+        .editable-field.hidden {
+            display: none;
+        }
+        .avatar-edit-button {
+            box-shadow: 0 12px 24px rgba(36, 49, 38, 0.22);
         }
     </style>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-300">
+<body class="dark:bg-gray-900 min-h-screen transition-colors duration-300">
 
     <!-- Navbar -->
-    <nav class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 px-6 py-3 flex items-center justify-between sticky top-0 z-50">
+    <nav class="bg-white/80 dark:bg-gray-800/90 backdrop-blur-md border-b border-primary/10 dark:border-gray-700 px-6 py-3 flex items-center justify-between sticky top-0 z-50">
         <div class="flex items-center gap-2">
             <a href="index.html" class="flex items-center gap-2">
-                <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-white shadow-lg shadow-blue-200 dark:shadow-none">SK</div>
+                <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center font-bold text-white shadow-lg shadow-primary/20 dark:shadow-none">MY</div>
                 <div class="leading-tight">
-                    <span class="text-lg font-extrabold text-gray-800 dark:text-white block tracking-tight">Sekolah</span>
-                    <span class="text-sm font-bold text-blue-600 uppercase tracking-tighter">Kita</span>
+                    <span class="text-lg font-extrabold text-gray-800 dark:text-white block tracking-tight">Masak</span>
+                    <span class="text-sm font-bold text-primary uppercase tracking-tighter">Yuk</span>
                 </div>
             </a>
         </div>
@@ -53,89 +96,168 @@
     </nav>
 
     <!-- Profile Content -->
-    <div class="max-w-4xl mx-auto px-4 py-12">
-        <!-- Page Header -->
+    <div class="profile-pattern">
+    <div class="max-w-5xl mx-auto px-4 py-10">
         <div class="mb-8">
-            <a href="index.html" class="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 mb-4">
+            <a href="index.html" class="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary mb-4">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                 </svg>
                 Kembali ke Beranda
             </a>
-            <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Profil Saya</h1>
-            <p class="text-gray-500 dark:text-gray-400 mt-1">Kelola informasi akun Anda</p>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-ink dark:text-white tracking-tight">Profil Saya</h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-2">Informasi akun akan otomatis tampil saat user login.</p>
         </div>
 
-        <!-- Alert Messages -->
         <div id="alert-container" class="mb-4 hidden">
             <div id="alert-message" class="p-4 rounded-lg text-sm font-medium"></div>
         </div>
 
-        <!-- Profile Card -->
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
-            <!-- Avatar Section -->
-            <div class="bg-gradient-to-r from-blue-500 to-blue-600 px-8 py-8">
-                <div class="flex items-center gap-6">
-                    <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg" id="avatar-container">
-                        <span id="avatar-initial" class="text-3xl font-bold text-blue-600"></span>
-                    </div>
-                    <div>
-                        <h2 id="user-name" class="text-2xl font-bold text-white"></h2>
-                        <p id="user-email" class="text-blue-100"></p>
+        <section class="glass-card dark:bg-gray-800/90 rounded-[2rem] md:rounded-[2.6rem] p-4 md:p-6">
+            <div id="profile-banner" class="relative overflow-hidden rounded-[1.8rem] md:rounded-[2.2rem] min-h-[280px] md:min-h-[360px] bg-cover bg-center" style="background-image: linear-gradient(180deg, rgba(36,49,38,0.16), rgba(36,49,38,0.3)), url('../assets/LoginBg.jpg');">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent"></div>
+                <div class="absolute top-4 right-4">
+                    <button type="button" id="edit-banner-button" class="rounded-2xl bg-white/30 hover:bg-white/40 text-white font-semibold px-5 py-3 backdrop-blur-md transition-colors">
+                        Edit Banner Profile
+                    </button>
+                    <input type="file" id="banner-upload" accept="image/*" class="hidden">
+                </div>
+                <div class="absolute inset-x-0 bottom-0 p-6 md:p-8">
+                    <div class="flex flex-col md:flex-row md:items-end gap-5">
+                        <div class="relative w-40 h-40 md:w-48 md:h-48 shrink-0" id="avatar-container">
+                            <div id="avatar-frame" class="w-full h-full rounded-full border-[6px] border-[#fff7ef] shadow-2xl bg-white overflow-hidden flex items-center justify-center">
+                                <div id="avatar-placeholder" class="w-full h-full bg-gradient-to-br from-[#738d68] to-[#455d3e] flex items-center justify-center">
+                                    <span id="avatar-initial" class="text-6xl font-extrabold text-white"></span>
+                                </div>
+                            </div>
+                            <button type="button" id="edit-avatar-button" class="avatar-edit-button absolute right-2 bottom-3 w-12 h-12 rounded-full bg-white/95 hover:bg-white text-primary flex items-center justify-center transition-colors" aria-label="Ganti foto profil">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 11l6.232-6.232a2.5 2.5 0 113.536 3.536L12.536 14.536a4 4 0 01-1.414.95L8 16l.514-3.122A4 4 0 019 11z"></path>
+                                </svg>
+                            </button>
+                            <input type="file" id="avatar-upload" accept="image/*" class="hidden">
+                        </div>
+                        <div class="pb-4">
+                            <div class="flex items-center gap-3 flex-wrap">
+                                <h2 id="hero-user-name" class="text-4xl md:text-5xl font-extrabold text-white tracking-tight"></h2>
+                                <button type="button" id="edit-hero-button" class="text-white/90 hover:text-white transition-colors" aria-label="Edit profil">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 11l6.232-6.232a2.5 2.5 0 113.536 3.536L12.536 14.536a4 4 0 01-1.414.95L8 16l.514-3.122A4 4 0 019 11z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <p id="hero-tagline" class="text-white/90 text-lg md:text-2xl mt-2">Siap masak dan eksplor resep favorit setiap hari.</p>
+                            <p id="user-email" class="text-white/75 mt-2 text-sm md:text-base"></p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Profile Form -->
-            <div class="p-8">
-                <form id="profile-form" class="space-y-6">
-                    <!-- Name -->
-                    <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nama Lengkap</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="mt-5 flex gap-3">
+                <button class="profile-tab active flex-1 rounded-full py-4 px-6 font-bold text-lg transition-all">Tentang Saya</button>
+                <button class="profile-tab flex-1 rounded-full py-4 px-6 font-bold text-lg bg-[#45603f] text-white/90 transition-all">Favorit</button>
+            </div>
+
+            <div class="mt-8 glass-card dark:bg-gray-800/90 rounded-[2rem] p-5 md:p-8">
+                <div>
+                    <div class="flex items-center justify-between gap-4 mb-6">
+                        <h3 class="text-2xl md:text-3xl font-extrabold text-primary dark:text-white">Tentang Saya</h3>
+                        <button type="button" id="edit-about-button" class="w-12 h-12 rounded-2xl bg-primary/10 hover:bg-primary/20 text-primary transition-colors flex items-center justify-center">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 11l6.232-6.232a2.5 2.5 0 113.536 3.536L12.536 14.536a4 4 0 01-1.414.95L8 16l.514-3.122A4 4 0 019 11z"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-7">
+                        <div class="stat-card rounded-[1.7rem] p-5 flex items-center gap-4">
+                            <div class="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                 </svg>
                             </div>
-                            <input type="text" id="name" name="name" required
-                                class="input-focus w-full pl-11 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-800 dark:text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:bg-white dark:focus:bg-gray-600 transition-colors">
+                            <div>
+                                <p class="text-2xl font-extrabold text-black dark:text-white" id="user-name"></p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400" id="short-bio">User MasakYuk aktif dan siap eksplor resep baru.</p>
+                                <input type="text" id="short-bio-input" class="editable-field hidden mt-3 w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-2xl text-gray-800 dark:text-white focus:outline-none focus:border-primary transition-colors" placeholder="Tulis bio singkat">
+                            </div>
                         </div>
-                    </div>
-
-                    <!-- Email -->
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+                        <div class="stat-card rounded-[1.7rem] p-5 flex items-center gap-4">
+                            <div class="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-3xl">👨‍🍳</div>
+                            <div>
+                                <p class="text-2xl font-extrabold text-black dark:text-white" id="profile-role">Koki Amatir</p>
+                                <select id="profile-role-input" class="editable-field hidden mt-3 w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-2xl text-gray-800 dark:text-white focus:outline-none focus:border-primary transition-colors">
+                                    <option value="Koki Amatir">Koki Amatir</option>
+                                    <option value="Koki Rumahan">Koki Rumahan</option>
+                                    <option value="Food Explorer">Food Explorer</option>
+                                    <option value="Home Chef">Home Chef</option>
+                                </select>
+                                <p class="text-amber-400 text-lg tracking-wider" id="profile-stars">★☆☆☆☆</p>
+                            </div>
+                        </div>
+                        <div class="stat-card rounded-[1.7rem] p-5 flex items-center gap-4">
+                            <div class="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10m-11 9h12a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v11a2 2 0 002 2z"></path>
                                 </svg>
                             </div>
-                            <input type="email" id="email" name="email" required
-                                class="input-focus w-full pl-11 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-800 dark:text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:bg-white dark:focus:bg-gray-600 transition-colors">
+                            <div>
+                                <p class="text-2xl font-extrabold text-black dark:text-white">Tanggal Bergabung</p>
+                                <p class="text-base text-gray-600 dark:text-gray-300" id="user-created"></p>
+                            </div>
+                        </div>
+                        <div class="stat-card rounded-[1.7rem] p-5 flex items-center gap-4">
+                            <div class="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 01.553-.894L9 2m0 18l6-3m-6 3V2m6 15l5.447-2.724A1 1 0 0021 13.382V2.618a1 1 0 00-.553-.894L15 0m0 17V0m-6 2l6-2"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-2xl font-extrabold text-black dark:text-white">Masakan Favorit</p>
+                                <p class="text-base text-gray-600 dark:text-gray-300" id="favorite-food">Indomie Goreng</p>
+                                <input type="text" id="favorite-food-input" class="editable-field hidden mt-3 w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-2xl text-gray-800 dark:text-white focus:outline-none focus:border-primary transition-colors" placeholder="Contoh: Indomie Goreng">
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Account Info -->
-                    <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
-                        <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">Informasi Akun</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-4">
-                                <p class="text-xs text-gray-500 dark:text-gray-400">ID Akun</p>
-                                <p id="user-id" class="text-sm font-medium text-gray-800 dark:text-white mt-1"></p>
-                            </div>
-                            <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-4">
-                                <p class="text-xs text-gray-500 dark:text-gray-400">Tanggal Registrasi</p>
-                                <p id="user-created" class="text-sm font-medium text-gray-800 dark:text-white mt-1"></p>
-                            </div>
+                    <div class="stat-card rounded-[2rem] p-6 min-h-[320px]">
+                        <h4 class="text-xl font-extrabold text-black dark:text-white mb-4">Deskripsi:</h4>
+                        <p id="profile-description" class="text-gray-600 dark:text-gray-300 leading-8">
+                            Profil ini menampilkan informasi akun user yang sedang login. Kamu bisa memperbarui nama dan email, lalu data akan langsung tersimpan dan muncul di bagian profil.
+                        </p>
+                        <textarea id="profile-description-input" class="editable-field hidden mt-4 w-full min-h-[220px] px-5 py-4 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-[1.5rem] text-gray-800 dark:text-white leading-8 focus:outline-none focus:border-primary transition-colors" placeholder="Tulis deskripsi profilmu di sini..."></textarea>
+                        <div id="about-edit-actions" class="editable-field hidden mt-4 flex justify-end gap-3">
+                            <button type="button" id="cancel-about-edit" class="px-5 py-3 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold transition-colors">Batal</button>
+                            <button type="button" id="save-about-edit" class="px-5 py-3 rounded-2xl bg-primary hover:bg-primary-dark text-white font-semibold transition-colors">Simpan Bio</button>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <!-- Submit Button -->
-                    <div class="flex justify-end gap-4 pt-4">
-                        <button type="submit" id="submit-btn"
-                            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg shadow-blue-200 dark:shadow-none hover:shadow-xl transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2">
+            <div class="mt-6 glass-card dark:bg-gray-800/90 rounded-[2rem] p-5 md:p-7">
+                <form id="profile-form" class="space-y-5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label for="name" class="block text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2">Nama Lengkap</label>
+                            <input type="text" id="name" name="name" required class="input-focus w-full px-4 py-4 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-2xl text-gray-800 dark:text-white focus:outline-none focus:border-primary transition-colors">
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2">Email</label>
+                            <input type="email" id="email" name="email" required class="input-focus w-full px-4 py-4 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-2xl text-gray-800 dark:text-white focus:outline-none focus:border-primary transition-colors">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="rounded-2xl bg-gray-50 dark:bg-gray-700 p-4">
+                            <p class="text-xs text-gray-500 dark:text-gray-400">ID Akun</p>
+                            <p id="user-id" class="text-base font-bold text-gray-800 dark:text-white mt-2"></p>
+                        </div>
+                        <div class="rounded-2xl bg-gray-50 dark:bg-gray-700 p-4">
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Status Akun</p>
+                            <p class="text-base font-bold text-gray-800 dark:text-white mt-2">Aktif</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="submit" id="submit-btn" class="bg-primary hover:bg-primary-dark text-white font-semibold py-4 px-7 rounded-2xl shadow-lg shadow-primary/20 hover:shadow-xl transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2">
                             <span id="btn-text">Simpan Perubahan</span>
                             <svg id="btn-loader" class="w-5 h-5 animate-spin hidden" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -145,23 +267,17 @@
                     </div>
                 </form>
             </div>
-        </div>
 
-        <!-- Logout Section -->
-        <div class="mt-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h3 class="font-semibold text-gray-800 dark:text-white">Keluar dari Akun</h3>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Anda akan keluar dari akun ini</p>
-                </div>
-                <button onclick="logout()" class="bg-red-50 dark:bg-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 font-medium py-2 px-4 rounded-xl transition-colors flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="mt-6 glass-card dark:bg-gray-800/90 rounded-[2rem] px-6 py-5">
+                <button onclick="logout()" class="w-full flex items-center gap-4 text-red-500 hover:text-red-600 font-extrabold text-2xl transition-colors">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                     </svg>
-                    Keluar
+                    Log Out
                 </button>
             </div>
-        </div>
+        </section>
+    </div>
     </div>
 
     <script src="auth.js"></script>
@@ -193,6 +309,136 @@
             }
         }
 
+        function getBannerStorageKey() {
+            const currentUser = getCurrentUser();
+            const userId = currentUser && currentUser.id ? currentUser.id : 'guest';
+            return `profile_banner_${userId}`;
+        }
+
+        function getAvatarStorageKey() {
+            const currentUser = getCurrentUser();
+            const userId = currentUser && currentUser.id ? currentUser.id : 'guest';
+            return `profile_avatar_${userId}`;
+        }
+
+        function getProfileMetaStorageKey() {
+            const currentUser = getCurrentUser();
+            const userId = currentUser && currentUser.id ? currentUser.id : 'guest';
+            return `profile_meta_${userId}`;
+        }
+
+        function setProfileBanner(imageUrl) {
+            const banner = document.getElementById('profile-banner');
+            if (!banner) return;
+
+            banner.style.backgroundImage = `linear-gradient(180deg, rgba(36,49,38,0.16), rgba(36,49,38,0.3)), url('${imageUrl}')`;
+        }
+
+        function loadSavedBanner() {
+            const savedBanner = localStorage.getItem(getBannerStorageKey());
+            if (savedBanner) {
+                setProfileBanner(savedBanner);
+            }
+        }
+
+        function setProfileAvatar(imageUrl) {
+            const avatarFrame = document.getElementById('avatar-frame');
+            if (!avatarFrame) return;
+
+            avatarFrame.innerHTML = `
+                <img src="${imageUrl}" alt="Foto profil" class="w-full h-full object-cover">
+            `;
+        }
+
+        function resetAvatarToInitial(initialText = '') {
+            const avatarFrame = document.getElementById('avatar-frame');
+            if (!avatarFrame) return;
+
+            avatarFrame.innerHTML = `
+                <div id="avatar-placeholder" class="w-full h-full bg-gradient-to-br from-[#738d68] to-[#455d3e] flex items-center justify-center">
+                    <span id="avatar-initial" class="text-6xl font-extrabold text-white">${initialText}</span>
+                </div>
+            `;
+        }
+
+        function syncAvatarInitial(initialText) {
+            const avatarInitial = document.getElementById('avatar-initial');
+            if (avatarInitial) {
+                avatarInitial.textContent = initialText;
+            }
+
+            if (!localStorage.getItem(getAvatarStorageKey())) {
+                resetAvatarToInitial(initialText);
+            }
+        }
+
+        function loadSavedAvatar() {
+            const savedAvatar = localStorage.getItem(getAvatarStorageKey());
+            if (savedAvatar) {
+                setProfileAvatar(savedAvatar);
+            } else {
+                const currentUser = getCurrentUser();
+                const initialText = currentUser && currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'M';
+                resetAvatarToInitial(initialText);
+            }
+        }
+
+        function getStoredProfileMeta() {
+            try {
+                return JSON.parse(localStorage.getItem(getProfileMetaStorageKey()) || '{}');
+            } catch (error) {
+                return {};
+            }
+        }
+
+        function saveStoredProfileMeta(meta) {
+            localStorage.setItem(getProfileMetaStorageKey(), JSON.stringify(meta));
+        }
+
+        function getRoleStars(role) {
+            const roleStarsMap = {
+                'Koki Amatir': '★☆☆☆☆',
+                'Koki Rumahan': '★★★☆☆',
+                'Food Explorer': '★★☆☆☆',
+                'Home Chef': '★★★★☆'
+            };
+
+            return roleStarsMap[role] || '★☆☆☆☆';
+        }
+
+        function applyProfileMeta(meta, fallbackName, fallbackDate) {
+            const shortBio = meta.shortBio || `${fallbackName} adalah pengguna aktif MasakYuk yang siap eksplor resep baru.`;
+            const description = meta.description || `${fallbackName} bergabung di MasakYuk pada ${fallbackDate}. Profil ini akan menampilkan informasi dasar akun secara otomatis saat user login, termasuk nama, email, tanggal bergabung, dan identitas singkat pengguna.`;
+            const favoriteFood = meta.favoriteFood || 'Indomie Goreng';
+            const tagline = meta.tagline || `Halo ${fallbackName}, siap menemukan resep favoritmu hari ini.`;
+            const role = meta.role || 'Koki Amatir';
+            const stars = meta.stars || getRoleStars(role);
+
+            document.getElementById('hero-tagline').textContent = tagline;
+            document.getElementById('short-bio').textContent = shortBio;
+            document.getElementById('profile-description').textContent = description;
+            document.getElementById('favorite-food').textContent = favoriteFood;
+            document.getElementById('profile-role').textContent = role;
+            document.getElementById('profile-stars').textContent = stars;
+
+            document.getElementById('profile-description-input').value = description;
+            document.getElementById('favorite-food-input').value = favoriteFood;
+            document.getElementById('short-bio-input').value = shortBio;
+            document.getElementById('profile-role-input').value = role;
+        }
+
+        function toggleAboutEditMode(isEditing) {
+            document.getElementById('profile-description').classList.toggle('hidden', isEditing);
+            document.getElementById('profile-description-input').classList.toggle('hidden', !isEditing);
+            document.getElementById('favorite-food').classList.toggle('hidden', isEditing);
+            document.getElementById('favorite-food-input').classList.toggle('hidden', !isEditing);
+            document.getElementById('short-bio').classList.toggle('hidden', isEditing);
+            document.getElementById('short-bio-input').classList.toggle('hidden', !isEditing);
+            document.getElementById('profile-role').classList.toggle('hidden', isEditing);
+            document.getElementById('profile-role-input').classList.toggle('hidden', !isEditing);
+            document.getElementById('about-edit-actions').classList.toggle('hidden', !isEditing);
+        }
+
         // Check authentication and load user data
         window.onload = async function() {
             initTheme();
@@ -206,6 +452,7 @@
 
             // Update navbar user menu
             updateUserMenu();
+            loadSavedBanner();
 
             // Load user data
             await loadUserData();
@@ -224,23 +471,25 @@
                     const data = await response.json();
                     const user = data.user;
                     
-                    // Update profile form
-                    document.getElementById('name').value = user.name;
-                    document.getElementById('email').value = user.email;
-                    document.getElementById('user-name').textContent = user.name;
-                    document.getElementById('user-email').textContent = user.email;
-                    document.getElementById('user-id').textContent = '#' + user.id;
-                    
-                    // Avatar initial
-                    document.getElementById('avatar-initial').textContent = user.name.charAt(0).toUpperCase();
-                    
-                    // Created date
+                    const userName = user.name || 'User MasakYuk';
                     const createdDate = new Date(user.created_at);
-                    document.getElementById('user-created').textContent = createdDate.toLocaleDateString('id-ID', {
+                    const formattedCreatedDate = createdDate.toLocaleDateString('id-ID', {
                         day: 'numeric',
                         month: 'long',
                         year: 'numeric'
                     });
+
+                    document.getElementById('name').value = user.name;
+                    document.getElementById('email').value = user.email;
+                    document.getElementById('user-name').textContent = userName;
+                    document.getElementById('hero-user-name').textContent = userName;
+                    document.getElementById('user-email').textContent = user.email;
+                    document.getElementById('user-id').textContent = '#' + user.id;
+                    
+                    syncAvatarInitial(userName.charAt(0).toUpperCase());
+                    document.getElementById('user-created').textContent = formattedCreatedDate;
+                    applyProfileMeta(getStoredProfileMeta(), userName, formattedCreatedDate);
+                    loadSavedAvatar();
                 } else {
                     // Token expired
                     localStorage.removeItem('token');
@@ -283,8 +532,12 @@
                 
                 if (data.success) {
                     document.getElementById('user-name').textContent = data.user.name;
+                    document.getElementById('hero-user-name').textContent = data.user.name;
                     document.getElementById('user-email').textContent = data.user.email;
-                    document.getElementById('avatar-initial').textContent = data.user.name.charAt(0).toUpperCase();
+                    syncAvatarInitial(data.user.name.charAt(0).toUpperCase());
+                    loadSavedAvatar();
+                    const createdText = document.getElementById('user-created').textContent || 'baru saja';
+                    applyProfileMeta(getStoredProfileMeta(), data.user.name, createdText);
                     
                     // Update localStorage user
                     localStorage.setItem('user', JSON.stringify(data.user));
@@ -316,9 +569,9 @@
             
             container.classList.remove('hidden');
             if (type === 'success') {
-                alertMessage.className = 'p-4 rounded-lg text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+                alertMessage.className = 'p-4 rounded-2xl text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
             } else {
-                alertMessage.className = 'p-4 rounded-lg text-sm font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+                alertMessage.className = 'p-4 rounded-2xl text-sm font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
             }
             alertMessage.textContent = message;
             
@@ -334,7 +587,112 @@
                 window.location.href = 'login.html';
             }
         }
+
+        document.getElementById('edit-banner-button').addEventListener('click', function() {
+            document.getElementById('banner-upload').click();
+        });
+
+        document.getElementById('edit-avatar-button').addEventListener('click', function() {
+            document.getElementById('avatar-upload').click();
+        });
+
+        document.getElementById('banner-upload').addEventListener('change', function(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                showAlert('error', 'File banner harus berupa gambar.');
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                showAlert('error', 'Ukuran gambar maksimal 5MB.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(loadEvent) {
+                const result = loadEvent.target && loadEvent.target.result;
+                if (!result) return;
+
+                setProfileBanner(result);
+                localStorage.setItem(getBannerStorageKey(), result);
+                showAlert('success', 'Banner profile berhasil diperbarui!');
+            };
+            reader.readAsDataURL(file);
+            event.target.value = '';
+        });
+
+        document.getElementById('avatar-upload').addEventListener('change', function(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                showAlert('error', 'File foto profil harus berupa gambar.');
+                return;
+            }
+
+            if (file.size > 3 * 1024 * 1024) {
+                showAlert('error', 'Ukuran foto profil maksimal 3MB.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(loadEvent) {
+                const result = loadEvent.target && loadEvent.target.result;
+                if (!result) return;
+
+                setProfileAvatar(result);
+                localStorage.setItem(getAvatarStorageKey(), result);
+                showAlert('success', 'Foto profil berhasil diperbarui!');
+            };
+            reader.readAsDataURL(file);
+            event.target.value = '';
+        });
+
+        document.getElementById('edit-about-button').addEventListener('click', function() {
+            toggleAboutEditMode(true);
+        });
+
+        document.getElementById('edit-hero-button').addEventListener('click', function() {
+            toggleAboutEditMode(true);
+            document.getElementById('profile-description-input').focus();
+        });
+
+        document.getElementById('cancel-about-edit').addEventListener('click', function() {
+            const currentUser = getCurrentUser();
+            const fallbackName = currentUser && currentUser.name ? currentUser.name : 'User MasakYuk';
+            const fallbackDate = document.getElementById('user-created').textContent || 'baru saja';
+            applyProfileMeta(getStoredProfileMeta(), fallbackName, fallbackDate);
+            toggleAboutEditMode(false);
+        });
+
+        document.getElementById('save-about-edit').addEventListener('click', function() {
+            const currentUser = getCurrentUser();
+            const fallbackName = currentUser && currentUser.name ? currentUser.name : 'User MasakYuk';
+            const favoriteFood = document.getElementById('favorite-food-input').value.trim() || 'Indomie Goreng';
+            const description = document.getElementById('profile-description-input').value.trim();
+            const shortBio = document.getElementById('short-bio-input').value.trim() || `${fallbackName} suka menikmati ${favoriteFood.toLowerCase()} dan eksplor resep baru.`;
+            const role = document.getElementById('profile-role-input').value || 'Koki Amatir';
+            const tagline = `Halo ${fallbackName}, ${favoriteFood} tetap jadi andalan hari ini.`;
+            const fallbackDate = document.getElementById('user-created').textContent || 'baru saja';
+            const stars = getRoleStars(role);
+
+            const meta = {
+                ...getStoredProfileMeta(),
+                favoriteFood,
+                description: description || `${fallbackName} bergabung di MasakYuk pada ${fallbackDate}. Profil ini akan menampilkan informasi dasar akun secara otomatis saat user login, termasuk nama, email, tanggal bergabung, dan identitas singkat pengguna.`,
+                shortBio,
+                tagline,
+                role,
+                stars
+            };
+
+            saveStoredProfileMeta(meta);
+            applyProfileMeta(meta, fallbackName, fallbackDate);
+            toggleAboutEditMode(false);
+            showAlert('success', 'Bio profil berhasil diperbarui!');
+        });
     </script>
 </body>
 </html>
-

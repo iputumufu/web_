@@ -2,6 +2,7 @@
 
 const API_URL = 'http://localhost:8000/api';
 const OAUTH_BASE_URL = 'http://localhost:8000';
+const PUBLIC_RECIPES_STORAGE_KEY = 'masakyuk_public_recipes';
 
 function getFrontendBaseUrl() {
     const currentPath = window.location.pathname;
@@ -31,6 +32,59 @@ function getCurrentUser() {
     return user ? JSON.parse(user) : null;
 }
 
+function getPublicRecipes() {
+    try {
+        return JSON.parse(localStorage.getItem(PUBLIC_RECIPES_STORAGE_KEY) || '[]');
+    } catch (error) {
+        return [];
+    }
+}
+
+function savePublicRecipes(recipes) {
+    localStorage.setItem(PUBLIC_RECIPES_STORAGE_KEY, JSON.stringify(recipes));
+}
+
+function getCurrentUserRecipes() {
+    const user = getCurrentUser();
+    if (!user) return [];
+
+    return getPublicRecipes().filter((recipe) => recipe.authorId === user.id);
+}
+
+function saveRecipe(recipeInput) {
+    const user = getCurrentUser();
+    if (!user) {
+        throw new Error('User harus login untuk membuat resep.');
+    }
+
+    const recipes = getPublicRecipes();
+    const recipe = {
+        id: `recipe_${Date.now()}`,
+        authorId: user.id,
+        authorName: user.name,
+        authorEmail: user.email,
+        createdAt: new Date().toISOString(),
+        ...recipeInput
+    };
+
+    recipes.unshift(recipe);
+    savePublicRecipes(recipes);
+    return recipe;
+}
+
+function getRecipeById(recipeId) {
+    return getPublicRecipes().find((recipe) => recipe.id === recipeId) || null;
+}
+
+function escapeHtml(value) {
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 /**
  * Update user menu in navbar
  */
@@ -42,6 +96,22 @@ function updateUserMenu() {
     
     if (isLoggedIn() && user) {
         const userInitial = user.name.charAt(0).toUpperCase();
+        const userRecipes = getCurrentUserRecipes().slice(0, 3);
+        const recipeLinks = userRecipes.length
+            ? userRecipes.map((recipe) => `
+                    <a href="test.html?recipe=${encodeURIComponent(recipe.id)}" class="flex items-start gap-3 px-5 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-cream hover:dark:bg-gray-700/50 transition-all rounded-xl mx-1 my-1">
+                        <span class="mt-1 inline-flex h-2.5 w-2.5 rounded-full bg-primary flex-shrink-0"></span>
+                        <span class="min-w-0">
+                            <span class="block font-semibold truncate">${escapeHtml(recipe.title)}</span>
+                            <span class="block text-xs text-gray-500 dark:text-gray-400">${escapeHtml(recipe.category)} • ${escapeHtml(recipe.difficulty)}</span>
+                        </span>
+                    </a>
+                `).join('')
+            : `
+                <div class="px-5 py-3 text-sm text-gray-500 dark:text-gray-400">
+                    Belum ada resep. Yuk publish resep pertamamu.
+                </div>
+            `;
         
         container.innerHTML = `
             <div class="relative group">
@@ -67,6 +137,19 @@ function updateUserMenu() {
                         </svg>
                         Profil Saya
                     </a>
+                    <a href="membuat-resep.html" class="flex items-center gap-4 px-5 py-3 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-cream hover:dark:bg-gray-700/50 hover:shadow-sm transition-all rounded-xl mx-1 my-1">
+                        <svg class="w-5 h-5 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Buat Resep
+                    </a>
+                    <div class="mx-3 my-2 rounded-2xl border border-primary/10 bg-cream/50 dark:bg-gray-700/30 dark:border-gray-700 overflow-hidden">
+                        <div class="px-4 py-3 border-b border-primary/10 dark:border-gray-700 flex items-center justify-between gap-3">
+                            <p class="text-sm font-bold text-gray-800 dark:text-white">Resep Saya</p>
+                            <a href="test.html" class="text-xs font-semibold text-primary hover:text-primary-dark">Lihat semua</a>
+                        </div>
+                        ${recipeLinks}
+                    </div>
                     <button onclick="logout()" class="w-full flex items-center gap-4 px-5 py-3 text-sm font-semibold text-primary-dark hover:bg-cream/70 dark:hover:bg-gray-700/50 hover:shadow-sm transition-all rounded-xl mx-1 my-1 group">
                         <svg class="w-5 h-5 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>

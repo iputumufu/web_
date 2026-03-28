@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buat Resep - MasakYuk</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5f7f55',
+                        'primary-dark': '#47623f',
+                        cream: '#fff7f1',
+                        accent: '#ff4d43',
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(247, 207, 145, 0.25), transparent 24%),
+                linear-gradient(180deg, #fff9f3 0%, #fffdf9 100%);
+            color: #243126;
+        }
+        .soft-card {
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid rgba(95, 127, 85, 0.1);
+            box-shadow: 0 18px 50px rgba(119, 89, 47, 0.1);
+        }
+        .field-shell {
+            background: #fff;
+            border: 1px solid rgba(95, 127, 85, 0.08);
+            box-shadow: 0 14px 28px rgba(106, 72, 28, 0.08);
+        }
+        .choice-chip {
+            border: 1px solid rgba(95, 127, 85, 0.14);
+            background: rgba(255, 255, 255, 0.84);
+            transition: all 0.2s ease;
+        }
+        .choice-chip.active {
+            background: #5f7f55;
+            color: #fff;
+            border-color: #5f7f55;
+            box-shadow: 0 12px 22px rgba(95, 127, 85, 0.22);
+        }
+        .dropzone.active {
+            border-color: #5f7f55;
+            background: rgba(95, 127, 85, 0.06);
+        }
+        .count-badge {
+            font-variant-numeric: tabular-nums;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <header class="sticky top-0 z-50 border-b border-primary/10 bg-white/80 backdrop-blur-xl">
+        <nav class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+            <a href="index.html" class="flex items-center gap-3">
+                <img src="../assets/MY_Logo.png" alt="MasakYuk" class="h-11 w-auto">
+            </a>
+            <div class="hidden items-center gap-8 text-sm font-semibold text-slate-700 md:flex">
+                <a href="index.html" class="hover:text-primary">Beranda</a>
+                <a href="test.html" class="hover:text-primary">Resep Publik</a>
+                <a href="membuat-resep.html" class="text-primary">Buat Resep</a>
+            </div>
+            <div id="user-menu-container" class="flex items-center gap-2"></div>
+        </nav>
+    </header>
+
+    <main class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <section class="mb-8 grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
+            <div class="soft-card rounded-[2rem] p-8">
+                <span class="mb-4 inline-flex rounded-full bg-primary/10 px-4 py-2 text-sm font-bold text-primary">Publish resep komunitas</span>
+                <h1 class="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">Buat resep khas Anda dengan tampilan yang rapi dan siap dilihat semua orang.</h1>
+                <p class="mt-4 max-w-2xl text-base leading-8 text-slate-600">Isi judul, bahan, langkah, kategori, foto, lalu publish. Setelah dikirim, resep akan muncul di halaman publik dan langsung masuk ke menu <strong>Resep Saya</strong> di navbar akun.</p>
+                <div class="mt-6 flex flex-wrap gap-3">
+                    <span class="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm ring-1 ring-primary/10">Live preview</span>
+                    <span class="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm ring-1 ring-primary/10">Resep publik</span>
+                    <span class="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm ring-1 ring-primary/10">Dropdown akun</span>
+                </div>
+            </div>
+            <div id="publish-status" class="soft-card rounded-[2rem] p-8">
+                <p class="text-sm font-bold uppercase tracking-[0.22em] text-primary/80">Status publish</p>
+                <h2 class="mt-4 text-2xl font-extrabold text-slate-900">Siap upload resep pertama</h2>
+                <p class="mt-3 text-base leading-8 text-slate-600">Preview kartu hasil publish akan muncul di bawah setelah resep berhasil disimpan.</p>
+                <a href="test.html" class="mt-6 inline-flex rounded-full bg-primary px-5 py-3 text-sm font-bold text-white transition hover:bg-primary-dark">Lihat resep publik</a>
+            </div>
+        </section>
+
+        <div id="page-alert" class="mb-6 hidden rounded-[1.5rem] px-5 py-4 text-sm font-semibold"></div>
+
+        <section class="grid gap-8 xl:grid-cols-[1.35fr_0.9fr]">
+            <form id="recipe-form" class="soft-card rounded-[2.25rem] p-6 sm:p-8">
+                <div class="space-y-8">
+                    <section class="grid gap-4 lg:grid-cols-[96px_1fr]">
+                        <div class="pt-2 text-primary">
+                            <p class="text-5xl font-extrabold leading-none">01</p>
+                        </div>
+                        <div>
+                            <label for="recipe-title" class="mb-3 block text-2xl font-extrabold text-primary-dark">Isi Judul</label>
+                            <div class="field-shell rounded-[1.75rem] p-4">
+                                <input id="recipe-title" maxlength="80" type="text" class="w-full border-0 bg-transparent text-lg font-semibold text-slate-900 outline-none" placeholder="Contoh: Apple Pie Rumahan" required>
+                                <div class="mt-2 text-right text-sm font-semibold text-slate-400"><span id="title-count" class="count-badge">0</span>/80</div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="grid gap-4 lg:grid-cols-[96px_1fr]">
+                        <div class="pt-2 text-primary">
+                            <p class="text-5xl font-extrabold leading-none">02</p>
+                        </div>
+                        <div>
+                            <label for="recipe-description" class="mb-3 block text-2xl font-extrabold text-primary-dark">Deskripsi Resepmu</label>
+                            <div class="field-shell rounded-[1.75rem] p-4">
+                                <textarea id="recipe-description" maxlength="220" rows="6" class="w-full resize-none border-0 bg-transparent text-base leading-8 text-slate-700 outline-none" placeholder="Ceritakan singkat rasa, suasana, atau ciri khas resepmu..." required></textarea>
+                                <div class="mt-2 text-right text-sm font-semibold text-slate-400"><span id="description-count" class="count-badge">0</span>/220</div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="grid gap-4 lg:grid-cols-[96px_1fr]">
+                        <div class="pt-2 text-primary">
+                            <p class="text-5xl font-extrabold leading-none">04</p>
+                        </div>
+                        <div>
+                            <div class="mb-4 flex items-center justify-between gap-3">
+                                <label class="text-2xl font-extrabold text-primary-dark">Masukkan Bahan-Bahan</label>
+                                <button id="add-ingredient" type="button" class="rounded-full border border-dashed border-primary/40 px-4 py-2 text-sm font-bold text-primary transition hover:bg-primary/5">+ Tambah Bahan</button>
+                            </div>
+                            <div id="ingredients-list" class="space-y-3"></div>
+                        </div>
+                    </section>
+
+                    <section class="grid gap-4 lg:grid-cols-[96px_1fr]">
+                        <div class="pt-2 text-primary">
+                            <p class="text-5xl font-extrabold leading-none">05</p>
+                        </div>
+                        <div>
+                            <div class="mb-4 flex items-center justify-between gap-3">
+                                <label class="text-2xl font-extrabold text-primary-dark">Berikan langkah-langkah resep</label>
+                                <button id="add-step" type="button" class="rounded-full border border-dashed border-primary/40 px-4 py-2 text-sm font-bold text-primary transition hover:bg-primary/5">+ Tambah Langkah</button>
+                            </div>
+                            <div id="steps-list" class="space-y-4"></div>
+                        </div>
+                    </section>
+
+                    <div class="flex flex-col gap-4 pt-4 sm:flex-row">
+                        <button type="submit" class="flex-1 rounded-full bg-primary px-6 py-4 text-lg font-extrabold text-white transition hover:bg-primary-dark">Publish Resep</button>
+                        <button id="reset-form" type="button" class="flex-1 rounded-full border-2 border-red-500 px-6 py-4 text-lg font-extrabold text-red-500 transition hover:bg-red-50">Hapus Semua</button>
+                    </div>
+                </div>
+            </form>
+
+            <aside class="soft-card rounded-[2.25rem] p-6 sm:p-8">
+                <div class="space-y-8">
+                    <section>
+                        <p class="mb-3 text-5xl font-extrabold leading-none text-primary">03</p>
+                        <h2 class="mb-5 text-2xl font-extrabold text-primary-dark">Buat Resep Khas Anda !!</h2>
+                        <label for="recipe-image" id="image-dropzone" class="dropzone flex min-h-[290px] cursor-pointer flex-col items-center justify-center rounded-[2rem] border-2 border-dashed border-primary/35 bg-white px-6 text-center transition">
+                            <div id="image-preview-shell" class="hidden h-full w-full overflow-hidden rounded-[1.5rem]">
+                                <img id="image-preview" src="" alt="Preview resep" class="h-full max-h-[260px] w-full object-cover">
+                            </div>
+                            <div id="image-placeholder">
+                                <div class="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary">
+                                    <svg class="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-10v6m0 0l-3-3m3 3l3-3"></path>
+                                    </svg>
+                                </div>
+                                <p class="text-2xl font-bold text-slate-500">Pilih Foto Resep Anda</p>
+                                <p class="mt-2 text-sm font-semibold text-slate-400">PNG / JPG, maksimal 5MB</p>
+                            </div>
+                            <input id="recipe-image" type="file" accept="image/*" class="hidden">
+                        </label>
+                    </section>
+
+                    <section>
+                        <h3 class="mb-4 text-xl font-extrabold text-slate-800">Pilih Jenis Makanan</h3>
+                        <div id="category-options" class="grid grid-cols-2 gap-3"></div>
+                    </section>
+
+                    <section>
+                        <h3 class="mb-4 text-xl font-extrabold text-slate-800">Pilih Negara</h3>
+                        <div id="country-options" class="grid grid-cols-2 gap-3"></div>
+                    </section>
+
+                    <section>
+                        <h3 class="mb-4 text-xl font-extrabold text-slate-800">Pilih Tingkat Kesulitan</h3>
+                        <div id="difficulty-options" class="grid grid-cols-3 gap-3"></div>
+                    </section>
+                </div>
+            </aside>
+        </section>
+
+        <section id="preview-section" class="mt-10 hidden">
+            <div class="mb-5 flex items-center justify-between gap-4">
+                <div>
+                    <p class="text-sm font-bold uppercase tracking-[0.22em] text-primary/80">Hasil publish</p>
+                    <h2 class="mt-2 text-3xl font-extrabold text-slate-900">Resep baru berhasil dibuat</h2>
+                </div>
+                <a href="test.html" class="rounded-full bg-primary px-5 py-3 text-sm font-bold text-white transition hover:bg-primary-dark">Buka halaman publik</a>
+            </div>
+            <div id="recipe-preview-card"></div>
+        </section>
+    </main>
+
+    <script src="auth.js"></script>
+    <script>
+        const recipeState = {
+            image: '',
+            category: '',
+            country: '',
+            difficulty: ''
+        };
+
+        const categoryOptions = ['Pembuka', 'Utama', 'Penutup', 'Camilan'];
+        const countryOptions = ['Indonesia', 'Amerika', 'Jepang', 'Korea', 'Italia', 'Thailand'];
+        const difficultyOptions = ['Mudah', 'Sedang', 'Susah'];
+
+        function ensureLoggedIn() {
+            if (!isLoggedIn()) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        function showAlert(message, type) {
+            const alert = document.getElementById('page-alert');
+            alert.classList.remove('hidden');
+            alert.textContent = message;
+            alert.className = `mb-6 rounded-[1.5rem] px-5 py-4 text-sm font-semibold ${type === 'error' ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-green-100 text-green-700 border border-green-200'}`;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function updateCounter(inputId, outputId) {
+            const input = document.getElementById(inputId);
+            const output = document.getElementById(outputId);
+            output.textContent = input.value.length;
+        }
+
+        function createIngredientRow(value = '') {
+            const row = document.createElement('div');
+            row.className = 'field-shell flex items-center gap-3 rounded-[1.5rem] p-3';
+            row.innerHTML = `
+                <span class="rounded-2xl bg-primary/10 px-3 py-2 text-sm font-extrabold text-primary">≡</span>
+                <input type="text" class="ingredient-input min-w-0 flex-1 border-0 bg-transparent text-base font-semibold text-slate-800 outline-none" placeholder="Contoh: 2 buah apel merah" value="${escapeHtml(value)}" required>
+                <button type="button" class="remove-row rounded-full bg-red-50 px-3 py-2 text-xs font-bold text-red-500 transition hover:bg-red-100">Hapus</button>
+            `;
+            return row;
+        }
+
+        function createStepRow(value = '') {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'field-shell flex items-start gap-4 rounded-[1.75rem] p-4';
+            const nextIndex = document.querySelectorAll('.step-row').length + 1;
+            wrapper.classList.add('step-row');
+            wrapper.innerHTML = `
+                <span class="mt-1 inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary text-lg font-extrabold text-white">${nextIndex}</span>
+                <textarea class="step-input min-h-[92px] flex-1 resize-none border-0 bg-transparent text-base leading-8 text-slate-700 outline-none" placeholder="Tulis langkah memasak ke-${nextIndex}" required>${escapeHtml(value)}</textarea>
+                <button type="button" class="remove-row rounded-full bg-red-50 px-3 py-2 text-xs font-bold text-red-500 transition hover:bg-red-100">Hapus</button>
+            `;
+            return wrapper;
+        }
+
+        function refreshStepNumbers() {
+            document.querySelectorAll('.step-row').forEach((row, index) => {
+                row.querySelector('span').textContent = index + 1;
+                row.querySelector('.step-input').placeholder = `Tulis langkah memasak ke-${index + 1}`;
+            });
+        }
+
+        function renderChoiceOptions(containerId, options, key) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = options.map((option) => `
+                <button type="button" data-choice-group="${key}" data-choice-value="${option}" class="choice-chip rounded-[1.5rem] px-4 py-4 text-left text-sm font-bold text-slate-700">
+                    ${option}
+                </button>
+            `).join('');
+        }
+
+        function bindChoiceGroup(key) {
+            document.querySelectorAll(`[data-choice-group="${key}"]`).forEach((button) => {
+                button.addEventListener('click', function() {
+                    recipeState[key] = this.dataset.choiceValue;
+                    document.querySelectorAll(`[data-choice-group="${key}"]`).forEach((item) => item.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        }
+
+        function renderPreviewCard(recipe) {
+            const preview = document.getElementById('recipe-preview-card');
+            preview.innerHTML = `
+                <article class="overflow-hidden rounded-[2.25rem] bg-white shadow-[0_28px_70px_rgba(106,72,28,0.14)]">
+                    <div class="relative h-[320px] overflow-hidden bg-slate-100">
+                        <img src="${recipe.image || '../assets/image.png'}" alt="${escapeHtml(recipe.title)}" class="h-full w-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/55 via-slate-900/5 to-transparent"></div>
+                        <div class="absolute left-6 top-6 flex gap-3">
+                            <span class="rounded-full bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-sm">${recipe.country}</span>
+                            <span class="rounded-full bg-[#ff4d43] px-4 py-2 text-sm font-bold text-white shadow-sm">${recipe.difficulty}</span>
+                        </div>
+                    </div>
+                    <div class="-mt-8 rounded-t-[2rem] bg-white px-8 py-7 relative">
+                        <p class="text-sm font-extrabold uppercase tracking-[0.22em] text-[#23c85a]">${recipe.category}</p>
+                        <h3 class="mt-3 text-4xl font-extrabold text-slate-900">${escapeHtml(recipe.title)}</h3>
+                        <p class="mt-4 max-w-3xl text-base leading-8 text-slate-600">${escapeHtml(recipe.description)}</p>
+                        <div class="mt-6 rounded-[1.75rem] bg-[#fff7df] px-5 py-4">
+                            <div class="flex flex-wrap items-center justify-between gap-3">
+                                <span class="text-lg font-extrabold text-[#f28c00]">COCOK 100%</span>
+                                <span class="rounded-full bg-white px-4 py-2 text-sm font-bold text-[#f4a032]">Resep kamu sudah dipublish</span>
+                            </div>
+                            <p class="mt-3 text-sm font-semibold text-slate-500">Butuh: ${recipe.ingredients.slice(0, 3).join(', ')}${recipe.ingredients.length > 3 ? '...' : ''}</p>
+                        </div>
+                    </div>
+                </article>
+            `;
+            document.getElementById('preview-section').classList.remove('hidden');
+        }
+
+        function collectListValues(selector) {
+            return Array.from(document.querySelectorAll(selector))
+                .map((input) => input.value.trim())
+                .filter(Boolean);
+        }
+
+        function resetForm() {
+            document.getElementById('recipe-form').reset();
+            recipeState.image = '';
+            recipeState.category = '';
+            recipeState.country = '';
+            recipeState.difficulty = '';
+            document.getElementById('ingredients-list').innerHTML = '';
+            document.getElementById('steps-list').innerHTML = '';
+            document.getElementById('title-count').textContent = '0';
+            document.getElementById('description-count').textContent = '0';
+            document.getElementById('image-preview').src = '';
+            document.getElementById('image-preview-shell').classList.add('hidden');
+            document.getElementById('image-placeholder').classList.remove('hidden');
+            document.querySelectorAll('.choice-chip').forEach((chip) => chip.classList.remove('active'));
+            for (let i = 0; i < 3; i += 1) {
+                document.getElementById('ingredients-list').appendChild(createIngredientRow());
+            }
+            for (let i = 0; i < 3; i += 1) {
+                document.getElementById('steps-list').appendChild(createStepRow());
+            }
+            refreshStepNumbers();
+        }
+
+        document.addEventListener('click', function(event) {
+            if (!event.target.classList.contains('remove-row')) return;
+
+            const list = event.target.closest('#ingredients-list, #steps-list');
+            if (!list) return;
+            if (list.children.length <= 1) return;
+            event.target.closest('.field-shell, .step-row').remove();
+            refreshStepNumbers();
+        });
+
+        document.getElementById('add-ingredient').addEventListener('click', function() {
+            document.getElementById('ingredients-list').appendChild(createIngredientRow());
+        });
+
+        document.getElementById('add-step').addEventListener('click', function() {
+            document.getElementById('steps-list').appendChild(createStepRow());
+            refreshStepNumbers();
+        });
+
+        document.getElementById('reset-form').addEventListener('click', function() {
+            resetForm();
+            showAlert('Semua isian form berhasil dibersihkan.', 'success');
+        });
+
+        document.getElementById('recipe-image').addEventListener('change', function(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) {
+                showAlert('File foto resep harus berupa gambar.', 'error');
+                return;
+            }
+            if (file.size > 5 * 1024 * 1024) {
+                showAlert('Ukuran foto resep maksimal 5MB.', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(loadEvent) {
+                recipeState.image = loadEvent.target.result;
+                document.getElementById('image-preview').src = recipeState.image;
+                document.getElementById('image-preview-shell').classList.remove('hidden');
+                document.getElementById('image-placeholder').classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        });
+
+        document.getElementById('recipe-title').addEventListener('input', function() {
+            updateCounter('recipe-title', 'title-count');
+        });
+
+        document.getElementById('recipe-description').addEventListener('input', function() {
+            updateCounter('recipe-description', 'description-count');
+        });
+
+        document.getElementById('recipe-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const title = document.getElementById('recipe-title').value.trim();
+            const description = document.getElementById('recipe-description').value.trim();
+            const ingredients = collectListValues('.ingredient-input');
+            const steps = collectListValues('.step-input');
+
+            if (!title || !description || !recipeState.category || !recipeState.country || !recipeState.difficulty) {
+                showAlert('Lengkapi judul, deskripsi, kategori, negara, dan tingkat kesulitan dulu ya.', 'error');
+                return;
+            }
+
+            if (!recipeState.image) {
+                showAlert('Upload foto resep terlebih dahulu.', 'error');
+                return;
+            }
+
+            if (ingredients.length < 2) {
+                showAlert('Minimal isi 2 bahan agar resep lebih jelas.', 'error');
+                return;
+            }
+
+            if (steps.length < 2) {
+                showAlert('Minimal isi 2 langkah agar resep bisa dipraktikkan.', 'error');
+                return;
+            }
+
+            const recipe = saveRecipe({
+                title,
+                description,
+                ingredients,
+                steps,
+                image: recipeState.image,
+                category: recipeState.category,
+                country: recipeState.country,
+                difficulty: recipeState.difficulty
+            });
+
+            document.getElementById('publish-status').innerHTML = `
+                <p class="text-sm font-bold uppercase tracking-[0.22em] text-primary/80">Status publish</p>
+                <h2 class="mt-4 text-2xl font-extrabold text-slate-900">Resep berhasil dipublish</h2>
+                <p class="mt-3 text-base leading-8 text-slate-600">${escapeHtml(recipe.title)} sudah masuk ke halaman publik dan dropdown Resep Saya.</p>
+                <div class="mt-5 flex flex-wrap gap-3">
+                    <a href="test.html?recipe=${encodeURIComponent(recipe.id)}" class="inline-flex rounded-full bg-primary px-5 py-3 text-sm font-bold text-white transition hover:bg-primary-dark">Lihat resep</a>
+                    <a href="test.html" class="inline-flex rounded-full bg-white px-5 py-3 text-sm font-bold text-primary ring-1 ring-primary/15 transition hover:bg-primary/5">Buka semua resep</a>
+                </div>
+            `;
+
+            renderPreviewCard(recipe);
+            updateNavbar();
+            showAlert('Resep berhasil dipublish dan sekarang bisa dilihat di halaman publik.', 'success');
+            window.scrollTo({ top: document.getElementById('preview-section').offsetTop - 80, behavior: 'smooth' });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            ensureLoggedIn();
+            updateNavbar();
+            renderChoiceOptions('category-options', categoryOptions, 'category');
+            renderChoiceOptions('country-options', countryOptions, 'country');
+            renderChoiceOptions('difficulty-options', difficultyOptions, 'difficulty');
+            bindChoiceGroup('category');
+            bindChoiceGroup('country');
+            bindChoiceGroup('difficulty');
+            resetForm();
+        });
+    </script>
+</body>
+</html>
