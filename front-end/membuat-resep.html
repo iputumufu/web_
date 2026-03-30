@@ -59,6 +59,16 @@
         .count-badge {
             font-variant-numeric: tabular-nums;
         }
+        .public-preview-card {
+            background: linear-gradient(180deg, #f6f9ff 0%, #ffffff 52%);
+            box-shadow: 0 24px 64px rgba(103, 78, 40, 0.14);
+        }
+        .public-preview-fade {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.26) 36%, rgba(26, 31, 39, 0.5) 100%);
+        }
+        .public-preview-summary {
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        }
     </style>
 </head>
 <body class="min-h-screen">
@@ -205,6 +215,7 @@
                 <div>
                     <p class="text-sm font-bold uppercase tracking-[0.22em] text-primary/80">Hasil publish</p>
                     <h2 class="mt-2 text-3xl font-extrabold text-slate-900">Resep baru berhasil dibuat</h2>
+                    <p class="mt-2 text-sm font-semibold text-slate-500">Preview ini sudah mengikuti gaya kartu resep publik yang baru.</p>
                 </div>
                 <a href="test.html" class="rounded-full bg-primary px-5 py-3 text-sm font-bold text-white transition hover:bg-primary-dark">Buka halaman publik</a>
             </div>
@@ -296,27 +307,33 @@
         }
 
         function renderPreviewCard(recipe) {
+            const missingCount = Math.max(recipe.ingredients.length - 1, 0);
             const preview = document.getElementById('recipe-preview-card');
             preview.innerHTML = `
-                <article class="overflow-hidden rounded-[2.25rem] bg-white shadow-[0_28px_70px_rgba(106,72,28,0.14)]">
+                <article class="public-preview-card overflow-hidden rounded-[2.35rem]">
                     <div class="relative h-[320px] overflow-hidden bg-slate-100">
                         <img src="${recipe.image || '../assets/image.png'}" alt="${escapeHtml(recipe.title)}" class="h-full w-full object-cover">
-                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/55 via-slate-900/5 to-transparent"></div>
-                        <div class="absolute left-6 top-6 flex gap-3">
+                        <div class="public-preview-fade absolute inset-0"></div>
+                        <div class="absolute left-6 top-6 right-6 flex items-start justify-between gap-3">
                             <span class="rounded-full bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-sm">${recipe.country}</span>
                             <span class="rounded-full bg-[#ff4d43] px-4 py-2 text-sm font-bold text-white shadow-sm">${recipe.difficulty}</span>
                         </div>
                     </div>
-                    <div class="-mt-8 rounded-t-[2rem] bg-white px-8 py-7 relative">
+                    <div class="-mt-8 rounded-t-[2.15rem] bg-white px-8 py-7 relative">
                         <p class="text-sm font-extrabold uppercase tracking-[0.22em] text-[#23c85a]">${recipe.category}</p>
                         <h3 class="mt-3 text-4xl font-extrabold text-slate-900">${escapeHtml(recipe.title)}</h3>
-                        <p class="mt-4 max-w-3xl text-base leading-8 text-slate-600">${escapeHtml(recipe.description)}</p>
-                        <div class="mt-6 rounded-[1.75rem] bg-[#fff7df] px-5 py-4">
-                            <div class="flex flex-wrap items-center justify-between gap-3">
-                                <span class="text-lg font-extrabold text-[#f28c00]">COCOK 100%</span>
-                                <span class="rounded-full bg-white px-4 py-2 text-sm font-bold text-[#f4a032]">Resep kamu sudah dipublish</span>
+                        <div class="mt-6 border-t border-slate-100 pt-5">
+                            <div class="public-preview-summary rounded-[1.65rem] bg-[#fff8e7] px-5 py-4">
+                                <div class="flex flex-wrap items-center justify-between gap-3">
+                                    <span class="text-lg font-extrabold text-[#f28c00]">COCOK 25%</span>
+                                    <span class="rounded-full bg-white px-4 py-2 text-sm font-bold text-[#f4a032]">${missingCount ? `Kurang ${missingCount} Bahan` : 'Semua bahan siap'}</span>
+                                </div>
+                                <p class="mt-3 text-sm font-semibold text-slate-500">Butuh: ${recipe.ingredients.slice(0, 3).join(', ')}${recipe.ingredients.length > 3 ? '...' : ''}</p>
                             </div>
-                            <p class="mt-3 text-sm font-semibold text-slate-500">Butuh: ${recipe.ingredients.slice(0, 3).join(', ')}${recipe.ingredients.length > 3 ? '...' : ''}</p>
+                            <div class="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm font-semibold text-slate-500">
+                                <span>Klik kartu ini nanti akan membuka modal detail langkah di halaman publik.</span>
+                                <a href="test.html?recipe=${encodeURIComponent(recipe.id)}" class="rounded-full bg-primary px-4 py-2 text-xs font-extrabold text-white transition hover:bg-primary-dark">Lihat modal publik</a>
+                            </div>
                         </div>
                     </div>
                 </article>
