@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MasakYuk - Expert System Resep</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        :root { --dark-green: #5B7A52; --light-cream: #FAF9F0; --primary-green: #22c55e; --light-green-active: #dcfce7; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--light-cream); color: var(--dark-green); margin: 0; }
+
+        .swiper { width: 100%; max-width: 1000px; height: 450px; border-radius: 2.5rem; margin-top: 20px; margin-bottom: 20px; }
+        .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
+        .swiper-pagination-bullet-active { background: var(--dark-green) !important; }
+
+        .glass-container { background: rgba(255, 255, 255, 0.95); border: 1px solid #e2e8f0; }
+        .rect-item { transition: all 0.3s; background: #E2E8F0; color: #64748b; cursor: pointer; display: flex; align-items: center; justify-content: center; min-height: 52px; padding: 10px 15px; border-radius: 999px; font-weight: 700; font-size: 0.9rem; text-align: center; }
+        
+        .rect-item:hover { transform: translateY(-3px); background: #cbd5e1; color: #334155; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .ing-item.active, .filter-item.active { background: var(--primary-green) !important; color: white !important; transform: scale(1.05); }
+
+        .selected-pill { background: var(--light-green-active); color: #166534; padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 800; border: 1px solid #bbf7d0; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .hidden { display: none; }
+        
+        #panel-bahan, #panel-filter { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        img.flag-icon { width: 24px; height: 16px; object-fit: cover; margin-right: 8px; border-radius: 2px; }
+
+        /* Modal Resep Custom */
+        #modal-resep { backdrop-filter: blur(12px); }
+        .resep-text { line-height: 1.8; font-size: 1.1rem; letter-spacing: 0.015em; }
+
+        .custom-container { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; padding: 20px; }
+
+        /* --- STYLING CARA KERJA --- */
+        .workflow-section {
+            padding: 30px 20px; 
+            text-align: center;
+            color: #FEF3C7; 
+            border-radius: 8px; 
+            margin-bottom: 30px;
+            background-color: #5B7A52; 
+            background-image: url('assets/Background\ MufuGay.jpg.jpeg'); 
+            background-size: cover; 
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .workflow-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 25px; }
+
+        .steps-flex {
+            display: flex; justify-content: center; align-items: flex-start; gap: 15px;
+            max-width: 1000px; margin: 0 auto;
+        }
+
+        .step-item {
+            flex: 1; padding: 0 10px; display: flex; flex-direction: column;
+            align-items: center; text-align: center;
+        }
+
+        .step-num { height: 120px; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; }
+        .step-num img { max-height: 100%; width: auto; }
+        .step-item h3 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+        .step-item p { font-size: 0.8rem; line-height: 1.4; opacity: 0.85; margin-bottom: 20px; }
+
+        @media (max-width: 768px) {
+            .steps-flex { flex-direction: column; align-items: center; }
+            .step-item { margin-bottom: 20px; }
+            .step-num { height: auto; }
+        }
+        
+        /* Popular Menu Murni CSS */
+        .popular-container { background-color: var(--light-cream); padding: 40px 20px; text-align: center; }
+        .popular-title { color: var(--dark-green); font-size: 2rem; font-weight: 800; margin-bottom: 40px; }
+        .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; max-width: 1100px; margin: 0 auto; }
+        .menu-card { background: var(--dark-green); border-radius: 30px; overflow: hidden; color: white; text-align: left; cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .menu-card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+        .card-image img { width: 100%; height: 200px; object-fit: cover; }
+        .card-info { padding: 20px; }
+        .card-info h3 { font-size: 1.4rem; font-weight: 700; margin: 0; }
+        .official { font-size: 0.8rem; opacity: 0.9; margin: 10px 0; display: flex; align-items: center; gap: 5px; }
+        .card-footer { display: flex; justify-content: space-between; font-weight: 700; color: #FFD700; font-size: 0.9rem; margin-top: 10px; }
+
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(8px); }
+        .modal-content { background: white; width: 90%; max-width: 550px; border-radius: 35px; padding: 35px; text-align: left; animation: slideUp 0.4s ease; }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .recipe-header { margin-bottom: 20px; }
+        .back-btn { font-size: 1.5rem; color: #94A3B8; cursor: pointer; }
+        .recipe-title { font-size: 2.2rem; font-weight: 800; color: #1E293B; margin: 5px 0; }
+        .recipe-meta { color: var(--primary-green); font-weight: 800; font-size: 0.85rem; letter-spacing: 1px; }
+        .recipe-box { background: #F8FAFC; border-radius: 25px; padding: 25px; margin: 20px 0; }
+        .box-label { font-size: 0.8rem; font-weight: 800; color: #94A3B8; margin-bottom: 10px; }
+        .recipe-text { color: #475569; line-height: 1.7; font-size: 1rem; }
+        .btn-close { background: var(--primary-green); color: white; width: 100%; padding: 18px; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; transition: background 0.3s; }
+        .btn-close:hover { background: #16a34a; }
+
+        @media (max-width: 992px) { .menu-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .menu-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+    <nav class="flex items-center justify-between px-12 py-6 bg-white shadow-sm sticky top-0 z-[100]">
+        <div class="flex items-center gap-2">
+            <div class="bg-[#5B7A52] p-2 rounded-lg text-white"><i class="fa-solid fa-utensils"></i></div>
+            <span class="font-black text-xl tracking-tighter">MasakYuk</span>
+        </div>
+        <div class="hidden md:flex gap-8 font-bold text-sm text-slate-500">
+            <a href="#" class="text-[#5B7A52]">BERANDA</a>
+            <a href="#">HIDANGAN</a>
+            <a href="#">MENU POPULER</a>
+            <a href="#">TENTANG KAMI</a>
+            <a href="#">BUAT RESEP</a>
+        </div>
+        <div class="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center"><i class="fa-solid fa-user text-slate-500"></i></div>
+    </nav>
+
+    <div class="swiper mySwiper">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide"><img src="assets/Poster Jumbotron (1).png"></div>
+            <div class="swiper-slide"><img src="assets/Poster Jumbotron (2).png"></div>
+            <div class="swiper-slide"><img src="assets/Poster Jumbotron (3).png"></div>
+        </div>
+        <div class="swiper-pagination"></div>
+    </div>
+
+<div class="custom-container">
+    <section class="workflow-section">
+        <h2 class="workflow-title">Cara Kerja</h2>
+        <div class="steps-flex">
+            <div class="step-item">
+                <div class="step-num"><img src="assets/carakerja1.png" alt="logo no 1" style="transform: translateY(0px);"></div>
+                <h3>Pilih Bahan Dasar Terbaik</h3>
+                <p>Pilih bahan dasar terbaik yang tersedia di dapur Anda untuk mulai dikurasi dan diolah.</p>
+            </div>
+            <div class="step-item">
+                <div class="step-num"><img src="assets/carakerja2.png" alt="logo no 2" style="transform: translateY(10px);"></div>
+                <h3>Tentukan Preferensi Menu</h3>
+                <p>Tentukan preferensi menu berdasarkan asal negara, profil rasa, hingga durasi memasak.</p>
+            </div>
+            <div class="step-item">
+                <div class="step-num"><img src="assets/carakerja3.png" alt="logo no 3"></div>
+                <h3>Sajian Standar Profesional</h3>
+                <p>Sajian standar profesional dengan instruksi eksklusif yang memastikan hasil akhir sempurna.</p>
+            </div>
+        </div>
+    </section>
+
+    <main class="max-w-5xl mx-auto mb-12 px-4 relative z-10">
+        <!-- Panel Bahan -->
+        <div id="panel-bahan" class="glass-container rounded-[3rem] overflow-hidden flex flex-col h-[85vh]">
+            <div class="p-8 pb-4 border-b border-slate-100 bg-white">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                    <h1 class="text-3xl font-extrabold tracking-tight">Pilih Bahan <span class="text-green-500">Masakan</span></h1>
+                    <div class="relative w-full md:w-72">
+                        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="search-bahan" placeholder="Cari bahan masakan..." class="w-full pl-11 pr-4 py-3 bg-slate-100 border border-transparent rounded-2xl text-sm focus:outline-none focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-green-50 transition-all">
+                    </div>
+                </div>
+                <div id="live-pills-bahan" class="flex flex-wrap gap-2 min-h-[40px] p-2 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                    <p class="text-slate-400 text-xs italic p-2">Belum ada bahan...</p>
+                </div>
+                <div class="nav-bar flex gap-2 overflow-x-auto py-4 mt-2" id="alphabet-links"></div>
+            </div>
+            
+            <div id="ingredient-list" class="custom-scroll flex-1 overflow-y-auto p-8 pt-2 bg-white"></div>
+            
+            <div class="p-6 bg-slate-50 border-t flex justify-between items-center">
+                <span class="text-sm font-bold text-slate-400">TERPILIH: <span id="count" class="text-green-600">0</span></span>
+                <button onclick="tampilkanFilter()" class="bg-[#22c55e] text-white px-10 py-4 rounded-2xl font-black shadow-lg hover:scale-105 active:scale-95 transition-all">PROSES REKOMENDASI</button>
+            </div>
+        </div>
+
+        <!-- Panel Filter -->
+        <div id="panel-filter" class="glass-container rounded-[3rem] overflow-hidden hidden bg-white p-10">
+            <button onclick="kembaliKeBahan()" class="flex items-center gap-2 text-slate-400 font-bold mb-8 hover:text-green-600 transition-colors"><i class="fa-solid fa-arrow-left"></i> Kembali ke Pilih Bahan</button>
+            <div class="space-y-10">
+                <section class="bg-slate-50 p-6 rounded-[2rem] border border-slate-100">
+                    <h2 class="text-sm font-black mb-4 uppercase tracking-widest text-slate-400">Bahan Terpilih :</h2>
+                    <div id="live-pills-filter" class="flex flex-wrap gap-2"></div>
+                </section>
+
+                <section>
+                    <h2 class="text-xl font-extrabold mb-6 text-[#4A5D45]">Pilih Negara (Pilih 1):</h2>
+                    <div id="filter-negara" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                        <div class="rect-item filter-item single-select active text-slate-800">Semua</div>
+                        <div class="rect-item filter-item single-select"><img src="https://flagcdn.com/jp.svg" class="flag-icon"> Jepang</div>
+                        <div class="rect-item filter-item single-select"><img src="https://flagcdn.com/kr.svg" class="flag-icon"> Korea</div>
+                        <div class="rect-item filter-item single-select"><img src="https://flagcdn.com/it.svg" class="flag-icon"> Italia</div>
+                        <div class="rect-item filter-item single-select"><img src="https://flagcdn.com/us.svg" class="flag-icon"> Amerika</div>
+                        <div class="rect-item filter-item single-select"><img src="https://flagcdn.com/id.svg" class="flag-icon"> Indonesia</div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2 class="text-xl font-extrabold mb-6 text-[#4A5D45]">Pilih Jenis Makanan (Pilih 1):</h2>
+                    <div id="filter-tipe" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="rect-item filter-item single-select active text-slate-800">Semua</div>
+                        <div class="rect-item filter-item single-select">Pembuka</div>
+                        <div class="rect-item filter-item single-select">Utama</div>
+                        <div class="rect-item filter-item single-select">Penutup</div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2 class="text-xl font-extrabold mb-6 text-[#4A5D45]">Tingkat Kesulitan (Pilih 1):</h2>
+                    <div id="filter-level" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="rect-item filter-item single-select active text-slate-800" data-val="Semua">Semua</div>
+                        <div class="rect-item filter-item single-select" data-val="Mudah" style="color:#16a34a">Mudah</div>
+                        <div class="rect-item filter-item single-select" data-val="Sedang" style="color:#ca8a04">Sedang</div>
+                        <div class="rect-item filter-item single-select" data-val="Susah" style="color:#dc2626">Susah</div>
+                    </div>
+                </section>
+
+                <button onclick="prosesHasilAkhir()" class="w-full bg-[#22c55e] text-white py-6 rounded-[2rem] font-black text-xl shadow-xl hover:scale-[1.02] transition-transform">LIHAT HASIL RESEP</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Hasil Rekomendasi -->
+    <div id="hasil-rekomendasi" class="max-w-6xl mx-auto p-8 mb-20 scroll-mt-24">
+        <h2 id="judul-hasil" class="text-4xl font-extrabold text-center mb-12 tracking-tight text-slate-800">
+            Hasil <span class="text-green-500">Menu</span>
+        </h2>
+        <div id="hasil-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="bg-white rounded-[2.5rem] p-6 shadow-sm border border-slate-100 opacity-50 text-center col-span-full py-20 italic">
+                Silakan pilih bahan dan filter terlebih dahulu untuk melihat rekomendasi...
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Detail Resep -->
+    <div id="modal-resep" class="fixed inset-0 bg-black/70 z-[200] hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-3xl max-h-[85vh] rounded-[3.5rem] overflow-hidden flex flex-col shadow-2xl">
+            <div class="p-10 border-b flex justify-between items-center bg-white sticky top-0 z-10">
+                <div class="flex items-center gap-4">
+                    <button onclick="tutupModal()" class="text-slate-400 hover:text-green-600 transition-colors text-2xl">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <div>
+                        <h2 id="modal-judul" class="text-3xl font-black text-slate-800">Judul Resep</h2>
+                        <p id="modal-sub" class="text-xs text-green-600 font-black uppercase tracking-[0.2em] mt-1"></p>
+                    </div>
+                </div>
+                <button onclick="tutupModal()" class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center hover:bg-red-50 hover:text-red-500 transition-all">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-10 overflow-y-auto custom-scroll bg-white flex-1 relative">
+                <div class="bg-slate-50 p-10 rounded-[2.5rem] border border-slate-100">
+                    <h4 class="font-black text-slate-400 mb-6 uppercase text-sm tracking-widest flex items-center gap-2">
+                        <i class="fa-solid fa-receipt text-green-500"></i> Detail Bahan & Cara Masak:
+                    </h4>
+                    <div id="modal-isi" class="resep-text text-slate-700 text-justify"></div>
+                </div>
+                <div class="mt-8 text-center">
+                    <button onclick="tutupModal()" class="bg-green-500 text-white px-12 py-4 rounded-2xl font-black shadow-lg hover:bg-green-600 transition-all">TUTUP RESEP</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="popular-container">
+    <h2 class="popular-title">Makanan Populer</h2>
+    <div class="menu-grid">
+        <div class="menu-card" onclick="openRecipe('Nasi Goreng')">
+            <div class="card-image"><img src="assets/nasgor.jpg" alt="Menu"></div>
+            <div class="card-info">
+                <h3>Nasi Goreng</h3>
+                <p class="official">Official MasakYuk</p>
+                <div class="card-footer"><span>★ 5.0</span><span>Kesusahan: Sedang</span></div>
+            </div>
+        </div>
+        <!-- Card populer lainnya... -->
+    </div>
+</div>
+
+<!-- Modal Populer -->
+<div id="modalResep" class="modal-overlay">
+    <div class="modal-content">
+        <div class="recipe-header">
+            <span class="back-btn" onclick="closeRecipe()">←</span>
+            <h1 id="m-title" class="recipe-title"></h1>
+            <p class="recipe-meta">INDONESIA • UTAMA • SEDANG</p>
+        </div>
+        <div class="recipe-box">
+            <div class="box-label">📋 DETAIL BAHAN & CARA MASAK:</div>
+            <div class="recipe-text">
+                <p>Nasi putih dingin, kecap manis, bumbu halus (bawang merah, putih, cabai).</p>
+                <p><strong>Cara:</strong> Tumis bumbu hingga harum, masukkan telur, lalu nasi. Tambahkan kecap dan aduk rata hingga matang garing.</p>
+            </div>
+        </div>
+        <button class="btn-close" onclick="closeRecipe()">TUTUP RESEP</button>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+    new Swiper(".mySwiper", {
+        loop: true,
+        autoplay: { delay: 3000, disableOnInteraction: false },
+        pagination: { el: ".swiper-pagination", clickable: true },
+    });
+
+    function openRecipe(title) {
+        document.getElementById('m-title').innerText = title;
+        document.getElementById('modalResep').style.display = 'flex';
+    }
+    function closeRecipe() { document.getElementById('modalResep').style.display = 'none'; }
+
+    // 1. DATA BAHAN LENGKAP
+    const dataBahan = {
+        "A": ["Agar-Agar", "Alpukat", "Apel", "Asam Jawa", "Ayam", "Ayam Cincang"],
+        "B": ["Basil", "Bawang Bombay", "Bawang Merah", "Bawang Putih", "Bayam", "Beras", "Beras Ketan", "Bihun"],
+        "C": ["Cabe", "Cabe Bubuk", "Cokelat", "Cokelat Bubuk", "Cream Cheese", "Cumi"],
+        "D": ["Daging Sapi", "Daun Bawang", "Daun Jeruk", "Daun Pisang", "Daun Salam", "Donat"],
+        "G": ["Garam", "Gochujang", "Gula", "Gula Merah"],
+        "I": ["Ikan Salmon", "Ikan Tuna", "Ikan Tenggiri", "Iga Sapi"],
+        "J": ["Jagung", "Jahe", "Jamur", "Jeruk Nipis"],
+        "K": ["Kacang Panjang", "Kacang Tanah", "Kayu Manis", "Kecap Asin", "Kecap Manis", "Keju Mozarella", "Kelapa Parut", "Kentang", "Kimchi", "Kol", "Kubis", "Kunyit", "Kulit Pangsit", "Kulit Lumpia"],
+        "L": ["Lada", "Lemon", "Lengkuas"],
+        "M": ["Madu", "Mentega", "Minyak Wijen", "Mirin", "Miso"],
+        "N": ["Nanas", "Nangka", "Nasi", "Nori"],
+        "P": ["Paprika", "Pasta", "Pisang"],
+        "R": ["Ragi", "Roti Tawar", "Rebung", "Rumput Laut"],
+        "S": ["Santan", "Sawi", "Serai", "Sosis", "Spaghetti", "Susu"],
+        "T": ["Tahu", "Tauge", "Telur", "Tempe", "Tepung Terigu", "Tepung Beras", "Tepung Tapioka", "Tepung Ketan", "Timun", "Tomat"],
+        "U": ["Udang", "Udon"],
+        "W": ["Wortel", "Wijen", "Wakame"]
+    };
+
+const allRecipes = [
+    // --- 🇮🇩 INDONESIA (15) ---
+    { nama: "Siomay", img: "assets/siomay.jpg", negara: "Indonesia", tipe: "Pembuka", level: "Sedang", bahan: ["Ikan Tenggiri", "Tepung Tapioka", "Telur", "Minyak Wijen"], detail: "1. Campur 500g tenggiri giling, 150g tapioka, 2 telur, 3 baput halus, 1 sdm minyak wijen, garam, dan lada.\n2. Masukkan ke kulit pangsit, kukus 20 menit.\n3. Saus: Haluskan 200g kacang goreng, 3 cabai merah, 50g gula merah, 1 sdm air asam jawa, dan 400ml air. Masak hingga berminyak." },
+    { nama: "Bakwan", img: "assets/bakwan.jpg", negara: "Indonesia", tipe: "Pembuka", level: "Mudah", bahan: ["Tepung Terigu", "Tepung Beras", "Kol", "Wortel"], detail: "1. Aduk 200g terigu, 50g tepung beras, 150g kol iris, 100g wortel, 50g tauge, 1 batang daun bawang, dan 200ml air.\n2. Bumbui dengan 3 baput halus, 1 sdt ketumbar, dan garam.\n3. Goreng deep-fry hingga garing." },
+    { nama: "Lumpia", img: "assets/lumpia.jpg", negara: "Indonesia", tipe: "Pembuka", level: "Sedang", bahan: ["Kulit Lumpia", "Rebung", "Ayam", "Kecap Manis"], detail: "1. Isi: Tumis 2 baput, 250g rebung rebus iris, 100g ayam cincang, 2 sdm kecap manis, lada, dan garam.\n2. Bungkus dengan 15 kulit lumpia, rekatkan dengan larutan terigu.\n3. Goreng garing." },
+    { nama: "Martabak Telur", img: "assets/martabak_telur.jpg", negara: "Indonesia", tipe: "Pembuka", level: "Sedang", bahan: ["Daging Sapi", "Bubuk Kari", "Telur Bebek", "Daun Bawang"], detail: "1. Tumis 100g daging sapi cincang dengan 1 sdt bubuk kari hingga matang.\n2. Campur dengan 3 telur bebek dan 3 batang daun bawang iris.\n3. Tuang ke atas kulit lumpia besar di pan datar, lipat kotak, goreng hingga kecokelatan." },
+    { nama: "Tahu Isi", img: "assets/tahu_isi.jpg", negara: "Indonesia", tipe: "Pembuka", level: "Mudah", bahan: ["Tahu Cokelat", "Tauge", "Wortel", "Tepung Terigu"], detail: "1. Belah 10 tahu cokelat, isi dengan tumisan tauge, wortel, dan seledri.\n2. Balur dengan adonan (150g terigu, 1 sdt kunyit bubuk, garam, air).\n3. Goreng hingga crispy." },
+    { nama: "Nasi Goreng", img: "assets/nasi_goreng.jpg", negara: "Indonesia", tipe: "Utama", level: "Mudah", bahan: ["Nasi", "Kecap Manis", "Saus Tiram", "Terasi"], detail: "1. Haluskan 4 bamer, 2 baput, 3 cabai, dan 1/2 sdt terasi bakar.\n2. Tumis bumbu, masukkan 2 piring nasi dingin, 3 sdm kecap manis, dan 1 sdm saus tiram.\n3. Aduk cepat dengan api besar selama 5 menit." },
+    { nama: "Rendang", img: "assets/rendang.jpg", negara: "Indonesia", tipe: "Utama", level: "Susah", bahan: ["Daging Sapi", "Santan", "Lengkuas", "Cabe Merah"], detail: "1. Haluskan 10 bamer, 5 baput, 100g cabai merah, 3cm lengkuas, 2cm jahe, dan 1 sdt ketumbar.\n2. Rebus 500g daging sapi paha dengan bumbu dan 1L santan.\n3. Masak dengan api sangat kecil sambil diaduk selama 4 jam hingga kering berminyak." },
+    { nama: "Sate Ayam", img: "assets/sate_ayam.jpg", negara: "Indonesia", tipe: "Utama", level: "Sedang", bahan: ["Ayam", "Kecap Manis", "Kacang Tanah", "Gula Merah"], detail: "1. Potong 500g paha ayam bentuk dadu. Rendam dengan 3 sdm kecap manis dan 1 sdm minyak. Tusuk dan bakar.\n2. Saus: Haluskan 150g kacang tanah, 2 bamer, 1 baput, dan 1 sdm gula merah.\n3. Masak dengan air hingga kental." },
+    { nama: "Ayam Goreng", img: "assets/ayam_ goreng.jpg", negara: "Indonesia", tipe: "Utama", level: "Sedang", bahan: ["Ayam", "Kunyit", "Lengkuas", "Ketumbar"], detail: "1. Ungkep 1 ekor ayam (8 potong) dengan 5 baput, 4cm kunyit, 3cm lengkuas parut, 2 sdm ketumbar bubuk, 2 sereh, dan 500ml air hingga air susut.\n2. Goreng ayam beserta sisa bumbu ungkepannya hingga garing." },
+    { nama: "Gado-Gado", img: "assets/gado_gado.jpg", negara: "Indonesia", tipe: "Utama", level: "Sedang", bahan: ["Kacang Panjang", "Tauge", "Bayam", "Tempe", "Tahu"], detail: "1. Rebus bayam, tauge, kacang panjang, dan labu siam. Sajikan dengan irisan 1 tahu dan 1 tempe goreng.\n2. Saus: Haluskan 200g kacang tanah goreng, 2 cabai, 50g gula merah, 1 sdm air asam, dan garam.\n3. Beri sedikit air hangat." },
+    { nama: "Es Cendol", img: "assets/es_cendol.jpg", negara: "Indonesia", tipe: "Penutup", level: "Mudah", bahan: ["Cendol", "Gula Merah", "Santan", "Pandan"], detail: "1. Tata 100g cendol dalam gelas.\n2. Tuang 150g gula merah cair (rebusan gula + 100ml air) dan 300ml santan yang direbus dengan pandan.\n3. Tambahkan es serut." },
+    { nama: "Klepon", img: "assets/klepon.jpg", negara: "Indonesia", tipe: "Penutup", level: "Sedang", bahan: ["Tepung Ketan", "Gula Merah", "Kelapa Parut", "Pandan"], detail: "1. Campur 250g tepung ketan dengan 200ml air pandan hangat hingga kalis.\n2. Isi dengan gula merah sisir, bulatkan, rebus hingga mengapung.\n3. Gulingkan di 150g kelapa parut kukus bergaram." },
+    { nama: "Kue Lapis", img: "assets/kue_lapis.jpg", negara: "Indonesia", tipe: "Penutup", level: "Susah", bahan: ["Tepung Beras", "Santan", "Gula", "Tapioka"], detail: "1. Campur 250g tepung beras, 50g tapioka, 200g gula, 800ml santan, dan garam.\n2. Bagi beberapa bagian, beri pewarna.\n3. Kukus per lapis (kira-kira 100ml) selama 5-7 menit hingga habis." },
+    { nama: "Pisang Goreng", img: "assets/pisang_goreng.jpg", negara: "Indonesia", tipe: "Penutup", level: "Mudah", bahan: ["Pisang Kepok", "Tepung Terigu", "Mentega"], detail: "1. Belah 5 pisang kepok menyerupai kipas.\n2. Celup ke adonan (150g terigu, 2 sdm tepung beras, 1 sdm gula, 1 sdt mentega, 170ml air).\n3. Goreng hingga kuning kecokelatan." },
+    { nama: "Es Campur", img: "assets/es_campur.jpg", negara: "Indonesia", tipe: "Penutup", level: "Mudah", bahan: ["Alpukat", "Nangka", "Cincau", "Sirup Cocopandan"], detail: "1. Campur potongan 1 alpukat, 5 nangka, 100g cincau, dan 100g kolang-kaling.\n2. Beri es serut.\n3. Siram dengan 100ml sirup cocopandan dan 50ml SKM putih." },
+
+    // --- 🇺🇸 AMERIKA (15) ---
+    { nama: "Caesar Salad", img: "assets/caesar_salad.jpg", negara: "Amerika", tipe: "Pembuka", level: "Mudah", bahan: ["Selada Romaine", "Mayo", "Parmesan", "Crouton"], detail: "1. Potong 1 ikat selada romaine.\n2. Campur dengan Dressing: 4 sdm mayo, 1 sdm air lemon, 1 baput parut, dan 1 sdt dijon mustard.\n3. Taburi 20g crouton dan 2 sdm parmesan." },
+    { nama: "Chicken Wings", img: "assets/chicken_wings.jpg", negara: "Amerika", tipe: "Pembuka", level: "Sedang", bahan: ["Sayap Ayam", "Mentega", "Saus Sambal", "Madu"], detail: "1. Goreng 500g sayap ayam hingga garing.\n2. Tumis Saus: 50g mentega leleh, 4 sdm saus sambal, 1 sdm madu, dan 1 sdt cuka apel.\n3. Masukkan ayam, aduk rata." },
+    { nama: "Onion Rings", img: "assets/onion_rings.jpg", negara: "Amerika", tipe: "Pembuka", level: "Mudah", bahan: ["Bawang Bombay", "Tepung Terigu", "Tepung Roti", "Paprika Bubuk"], detail: "1. Iris 1 bawang bombay melingkar 1cm.\n2. Celup ke adonan (100g terigu, 1 sdt baking powder, 1 sdt paprika, 150ml air es).\n3. Balur tepung roti, goreng hingga keemasan." },
+    { nama: "Nachos", img: "assets/nachos.jpg", negara: "Amerika", tipe: "Pembuka", level: "Mudah", bahan: ["Tortilla Chips", "Daging Sapi", "Keju Cair", "Jalapeno"], detail: "1. Tata 1 bungkus tortilla chips di piring.\n2. Beri topping 100g daging cincang tumis, siraman 100g keju cair, dan iris jalapeño.\n3. Tambahkan 2 sdm sour cream." },
+    { nama: "Garlic Bread", img: "assets/garlic_bread.jpg", negara: "Amerika", tipe: "Pembuka", level: "Mudah", bahan: ["Baguette", "Mentega", "Bawang Putih", "Peterseli"], detail: "1. Iris 1 baguette (jangan putus).\n2. Olesi sela-selanya dengan campuran 100g mentega, 4 baput cincang, dan peterseli.\n3. Panggang di oven 180°C selama 8 menit." },
+    { nama: "Burger", img: "assets/burger.jpg", negara: "Amerika", tipe: "Utama", level: "Mudah", bahan: ["Daging Sapi", "Bun Burger", "Keju", "Tomat"], detail: "1. Bentuk 300g daging sapi cincang menjadi 2 patty, bumbui garam/lada, panggang.\n2. Susun di 2 bun burger dengan keju, tomat, dan selada.\n3. Tambahkan mayo dan saus tomat." },
+    { nama: "BBQ Ribs", img: "assets/bbq_ribs.jpg", negara: "Amerika", tipe: "Utama", level: "Susah", bahan: ["Iga Sapi", "Saus Tomat", "Cuka Apel", "Gula Merah"], detail: "1. Rebus 500g iga dengan bamer/baput 1 jam.\n2. Olesi Saus: 150ml saus tomat, 2 sdm cuka apel, 3 sdm gula merah, 1 sdt asap cair.\n3. Panggang hingga terkaramelisasi." },
+    { nama: "Steak", img: "assets/steak.jpg", negara: "Amerika", tipe: "Utama", level: "Sedang", bahan: ["Ribeye", "Mentega", "Bawang Putih", "Rosemary"], detail: "1. Ambil 200g steak suhu ruang. Keringkan, taburi garam & lada.\n2. Masak di pan panas dengan 2 sdm mentega, 3 baput geprek, dan rosemary.\n3. Masak 3 menit tiap sisi." },
+    { nama: "Fried Chicken", img: "assets/fried_chicken.jpg", negara: "Amerika", tipe: "Utama", level: "Sedang", bahan: ["Ayam", "Buttermilk", "Tepung Terigu", "Paprika Bubuk"], detail: "1. Rendam 500g ayam dalam buttermilk (200ml susu + 1 sdm cuka) 30 menit.\n2. Balur ke tepung (200g terigu, paprika bubuk, baput bubuk).\n3. Goreng hingga cokelat keemasan." },
+    { nama: "Hot Dog", img: "assets/hot_dog.jpg", negara: "Amerika", tipe: "Utama", level: "Mudah", bahan: ["Sosis Sapi", "Roti Hot Dog", "Mustard", "Relish"], detail: "1. Panggang 2 sosis sapi.\n2. Masukkan ke 2 roti hot dog.\n3. Beri topping mustard kuning, saus tomat, bawang bombay cincang, dan sweet relish." },
+    { nama: "Apple Pie", img: "assets/apple_pie.jpg", negara: "Amerika", tipe: "Penutup", level: "Susah", bahan: ["Apel", "Gula", "Kayu Manis", "Pastry"], detail: "1. Campur 3 iris apel malang dengan 100g gula, 1 sdt kayu manis, dan 1 sdm mentega.\n2. Masukkan ke dalam kulit pastry, tutup atasnya.\n3. Panggang 180°C selama 45 menit." },
+    { nama: "Brownies", img: "assets/brownies.jpg", negara: "Amerika", tipe: "Penutup", level: "Sedang", bahan: ["Cokelat Batang", "Mentega", "Telur", "Gula"], detail: "1. Lelehkan 150g cokelat batang dan 100g mentega.\n2. Kocok 2 telur dan 120g gula, campur cokelat.\n3. Masukkan 100g terigu, panggang 20x20cm selama 25 menit." },
+    { nama: "Donat", img: "assets/donat.jpg", negara: "Amerika", tipe: "Penutup", level: "Sedang", bahan: ["Tepung Terigu", "Ragi", "Susu", "Gula"], detail: "1. Campur 250g terigu, 1 sdt ragi, 40g gula, 1 kuning telur, 130ml susu.\n2. Uleni hingga kalis, diamkan 1 jam.\n3. Bentuk bulat berlubang, goreng, tabur gula halus." },
+    { nama: "Cheesecake", img: "assets/cheesecake.jpg", negara: "Amerika", tipe: "Penutup", level: "Susah", bahan: ["Cream Cheese", "Biskuit", "Whipped Cream", "Telur"], detail: "1. Tekan 150g biskuit hancur + 50g mentega di dasar loyang.\n2. Mixer 250g cream cheese, 60g gula, 1 telur, 100ml whipped cream.\n3. Tuang ke loyang, panggang/kukus hingga set." },
+    { nama: "Ice Cream", img: "assets/ice_cream.jpg", negara: "Amerika", tipe: "Penutup", level: "Mudah", bahan: ["Whipped Cream", "Susu Kental Manis", "Vanila"], detail: "1. Kocok 250ml whipped cream cair hingga kaku.\n2. Campur dengan 120ml SKM dan 1 sdt vanila.\n3. Tuang ke wadah, bekukan di freezer selama 8 jam." },
+
+    // --- 🇯🇵 JEPANG (15) ---
+    { nama: "Miso Soup", img: "assets/miso_soup.jpg", negara: "Jepang", tipe: "Pembuka", level: "Mudah", bahan: ["Pasta Miso", "Dashi", "Tahu Sutra", "Wakame"], detail: "1. Rebus 600ml air dengan 1 sdt dashi.\n2. Matikan api, larutkan 2 sdm pasta miso.\n3. Masukkan 100g tahu sutra kotak, 1 sdm wakame, dan daun bawang." },
+    { nama: "Takoyaki", img: "assets/takoyaki.jpg", negara: "Jepang", tipe: "Pembuka", level: "Sedang", bahan: ["Tepung Terigu", "Dashi", "Gurita", "Tenkasu"], detail: "1. Campur 100g terigu, 1 telur, dan 350ml air dashi.\n2. Tuang ke cetakan, isi dengan gurita dan tenkasu.\n3. Putar hingga bulat, sajikan dengan saus dan mayo." },
+    { nama: "Gyoza", img: "assets/gyoza.jpg", negara: "Jepang", tipe: "Pembuka", level: "Sedang", bahan: ["Daging Cincang", "Sawi Putih", "Kulit Gyoza", "Minyak Wijen"], detail: "1. Isi 15 kulit gyoza dengan campuran 150g daging cincang, sawi putih, baput, jahe, minyak wijen.\n2. Panggang di pan.\n3. Beri sedikit air, tutup hingga air habis." },
+    { nama: "Sunomono", img: "assets/sunomono.jpg", negara: "Jepang", tipe: "Pembuka", level: "Mudah", bahan: ["Timun Jepang", "Cuka Beras", "Wijen"], detail: "1. Iris tipis 1 timun jepang.\n2. Rendam dalam Dressing: 3 sdm cuka beras, 1 sdm gula, 1/2 sdt kecap asin.\n3. Taburi wijen sangrai." },
+    { nama: "Agedashi Tofu", img: "assets/agedashi_tofu.jpg", negara: "Jepang", tipe: "Pembuka", level: "Sedang", bahan: ["Tahu Sutra", "Maizena", "Shoyu", "Mirin"], detail: "1. Potong kotak tahu sutra, balur maizena, goreng garing.\n2. Siram Kuah: 100ml dashi, 1 sdm shoyu, 1 sdm mirin yang dipanaskan.\n3. Sajikan hangat." },
+    { nama: "Sushi", img: "assets/sushi.jpg", negara: "Jepang", tipe: "Utama", level: "Susah", bahan: ["Nasi Jepang", "Cuka Beras", "Salmon", "Nori"], detail: "1. Aduk 300g nasi hangat dengan 2 sdm cuka beras, 1 sdm gula, garam.\n2. Bentuk lonjong atau gulung dengan nori.\n3. Beri topping salmon mentah segar." },
+    { nama: "Ramen", img: "assets/ramen.jpg", negara: "Jepang", tipe: "Utama", level: "Susah", bahan: ["Mie Ramen", "Kaldu Ayam", "Shoyu", "Narutomaki"], detail: "1. Rebus mie ramen.\n2. Buat Kuah: 500ml kaldu ayam + 2 sdm shoyu + jahe geprek + minyak wijen.\n3. Sajikan mie dengan kuah, telur rebus, dan narutomaki." },
+    { nama: "Tempura", img: "assets/tempura.jpg", negara: "Jepang", tipe: "Utama", level: "Sedang", bahan: ["Udang", "Tepung Tempura", "Kuning Telur"], detail: "1. Celup 6 udang ke adonan (100g tepung tempura, 150ml air es, 1 kuning telur).\n2. Jangan aduk terlalu rata.\n3. Goreng deep-fry hingga garing pucat." },
+    { nama: "Teriyaki Chicken", img: "assets/teriyaki_chicken.jpg", negara: "Jepang", tipe: "Utama", level: "Mudah", bahan: ["Paha Ayam", "Shoyu", "Mirin", "Madu"], detail: "1. Panggang 250g paha ayam fillet di pan.\n2. Masukkan Saus: 3 sdm shoyu, 2 sdm mirin/madu, 1 sdm gula.\n3. Masak hingga saus menyusut dan mengental." },
+    { nama: "Udon", img: "assets/udon.jpg", negara: "Jepang", tipe: "Utama", level: "Sedang", bahan: ["Mie Udon", "Dashi", "Shoyu", "Tenkasu"], detail: "1. Rebus 1 pack mie udon.\n2. Sajikan dengan Kuah: 400ml dashi, 1 sdm shoyu, 1 sdm mirin, dan garam.\n3. Taburi daun bawang dan tenkasu." },
+    { nama: "Mochi", img: "assets/mochi.jpg", negara: "Jepang", tipe: "Penutup", level: "Susah", bahan: ["Tepung Ketan", "Pasta Kacang Merah", "Maizena"], detail: "1. Campur 100g tepung ketan, 50g gula, 150ml air. Kukus 15 menit.\n2. Uleni selagi panas, beri isi pasta kacang merah.\n3. Bulatkan dengan bantuan maizena." },
+    { nama: "Dorayaki", img: "assets/dorayaki.jpg", negara: "Jepang", tipe: "Penutup", level: "Sedang", bahan: ["Telur", "Madu", "Tepung Terigu", "Pasta Kacang Merah"], detail: "1. Kocok 2 telur, 50g gula, 1 sdm madu. Masukkan 130g terigu, baking soda, air.\n2. Panggang bulat di teflon.\n3. Tangkupkan dua lembar dengan isi kacang merah." },
+    { nama: "Matcha Ice Cream", img: "assets/matcha_ice_cream.jpg", negara: "Jepang", tipe: "Penutup", level: "Sedang", bahan: ["Bubuk Matcha", "Whipped Cream", "Susu Kental Manis"], detail: "1. Campur adonan dasar es krim (whipped cream + SKM).\n2. Tambahkan 1,5 sdm bubuk matcha premium.\n3. Aduk rata dan bekukan di freezer." },
+    { nama: "Taiyaki", img: "assets/taiyaki.jpg", negara: "Jepang", tipe: "Penutup", level: "Susah", bahan: ["Tepung Terigu", "Susu", "Cokelat", "Telur"], detail: "1. Buat adonan (150g terigu, 1 telur, 180ml susu, 2 sdm gula, baking powder).\n2. Tuang ke cetakan ikan.\n3. Beri isi cokelat/kacang merah, panggang hingga matang." },
+    { nama: "Anmitsu", img: "assets/anmitsu.jpg", negara: "Jepang", tipe: "Penutup", level: "Susah", bahan: ["Agar-agar", "Pasta Kacang Merah", "Jeruk Kaleng", "Gula Merah"], detail: "1. Sajikan potongan agar-agar dalam mangkuk.\n2. Beri pasta kacang merah dan jeruk.\n3. Siram Kuromitsu (rebusan gula merah + air hingga kental)." },
+
+    // --- 🇮🇹 ITALIA (15) ---
+    { nama: "Bruschetta", img: "assets/bruschetta.jpg", negara: "Italia", tipe: "Pembuka", level: "Mudah", bahan: ["Roti", "Tomat", "Basil", "Olive Oil"], detail: "1. Panggang 4 iris roti.\n2. Beri topping campuran 2 tomat cincang, basil segar, 2 sdm olive oil.\n3. Tambahkan garam dan lada." },
+    { nama: "Caprese Salad", img: "assets/caprese_salad.jpg", negara: "Italia", tipe: "Pembuka", level: "Mudah", bahan: ["Tomat", "Keju Mozzarella", "Basil", "Balsamic"], detail: "1. Susun selang-seling irisan tomat merah, keju mozzarella buffalo, dan daun basil.\n2. Siram dengan olive oil.\n3. Tambahkan balsamic reduction." },
+    { nama: "Antipasto", img: "assets/antipasto.jpg", negara: "Italia", tipe: "Pembuka", level: "Sedang", bahan: ["Prosciutto", "Salami", "Parmigiano", "Zaitun"], detail: "1. Tata di papan: 50g prosciutto, 50g salami.\n2. Tambahkan potongan keju parmigiano dan zaitun.\n3. Tambahkan artichoke dan kacang walnut." },
+    { nama: "Minestrone Soup", img: "assets/minestrone_soup.jpg", negara: "Italia", tipe: "Pembuka", level: "Sedang", bahan: ["Wortel", "Kentang", "Pasta Ditalini", "Pasta Tomat"], detail: "1. Tumis wortel, seledri, kentang.\n2. Tambahkan 400ml kaldu sayur, 1 sdm pasta tomat, dan 50g pasta ditalini.\n3. Rebus hingga semua empuk." },
+    { nama: "Crostini", img: "assets/crostini.jpg", negara: "Italia", tipe: "Pembuka", level: "Mudah", bahan: ["Roti", "Keju Ricotta", "Lemon", "Madu"], detail: "1. Panggang roti kecil.\n2. Olesi dengan campuran 100g keju ricotta dan parutan kulit lemon.\n3. Beri sedikit tetesan madu di atasnya." },
+    { nama: "Spaghetti Aglio Olio", img: "assets/spaghetti_aglio.jpg", negara: "Italia", tipe: "Utama", level: "Mudah", bahan: ["Spaghetti", "Bawang Putih", "Cabe Kering", "Olive Oil"], detail: "1. Rebus 100g spaghetti.\n2. Tumis 2 baput iris dan 1 cabai kering dengan 3 sdm olive oil.\n3. Masukkan pasta, tabur peterseli dan parmesan." },
+    { nama: "Lasagna", img: "assets/lasagna.jpg", negara: "Italia", tipe: "Utama", level: "Susah", bahan: ["Pasta Lasagna", "Daging Sapi", "Susu", "Saus Tomat"], detail: "1. Buat Ragu: tumis 200g daging sapi + saus tomat.\n2. Buat Bechamel: lelehkan mentega + terigu + 250ml susu.\n3. Susun berlapis, lalu panggang." },
+    { nama: "Pizza", img: "assets/pizza.jpg", negara: "Italia", tipe: "Utama", level: "Sedang", bahan: ["Adonan Ragi", "Saus Tomat", "Mozzarella", "Basil"], detail: "1. Gilas tipis 200g adonan ragi.\n2. Olesi 3 sdm saus tomat, taburi 100g mozzarella dan basil.\n3. Panggang suhu 250°C selama 7-10 menit." },
+    { nama: "Risotto", img: "assets/risotto.jpg", negara: "Italia", tipe: "Utama", level: "Susah", bahan: ["Beras Arborio", "Kaldu Ayam", "Parmesan", "Mentega"], detail: "1. Tumis 150g beras arborio.\n2. Masukkan 600ml kaldu ayam bertahap sambil diaduk.\n3. Tambahkan lemon, 30g mentega, dan 30g parmesan di akhir." },
+    { nama: "Fettuccine Alfredo", img: "assets/fettuccine_alfredo.jpg", negara: "Italia", tipe: "Utama", level: "Mudah", bahan: ["Fettuccine", "Mentega", "Parmesan"], detail: "1. Rebus 100g fettuccine.\n2. Campur dengan 50g mentega empuk dan 50g parmesan.\n3. Aduk cepat dengan air rebusan pasta hingga creamy." },
+    { nama: "Tiramisu", img: "assets/tiramisu.jpg", negara: "Italia", tipe: "Penutup", level: "Sedang", bahan: ["Ladyfingers", "Mascarpone", "Espresso", "Kakao"], detail: "1. Celup 10 ladyfingers ke espresso.\n2. Buat krim dari 250g mascarpone, 2 kuning telur, 50g gula (ditim).\n3. Susun berlapis, tabur kakao bubuk." },
+    { nama: "Affogato", img: "assets/affogato.jpg", negara: "Italia", tipe: "Penutup", level: "Mudah", bahan: ["Espresso", "Ice Cream Vanila"], detail: "1. Siapkan 1 scoop es krim vanila dalam gelas.\n2. Seduh 30ml espresso panas.\n3. Siram es krim dengan espresso tersebut." },
+    { nama: "Panna Cotta", img: "assets/panna_cotta.jpg", negara: "Italia", tipe: "Penutup", level: "Sedang", bahan: ["Heavy Cream", "Susu", "Gelatin", "Gula"], detail: "1. Panaskan 200ml heavy cream, 50ml susu, dan 40g gula.\n2. Masukkan 1 sdt gelatin larut.\n3. Tuang ke cetakan, dinginkan 4 jam." },
+    { nama: "Cannoli", img: "assets/cannoli.jpg", negara: "Italia", tipe: "Penutup", level: "Susah", bahan: ["Kulit Pastry", "Keju Ricotta", "Choco Chips"], detail: "1. Siapkan kulit pastry tabung garing.\n2. Isi dengan campuran 200g ricotta kering, 40g gula halus, vanila.\n3. Tambahkan choco chips di ujungnya." },
+    { nama: "Zabaglione", img: "assets/zabaglione.jpg", negara: "Italia", tipe: "Penutup", level: "Susah", bahan: ["Kuning Telur", "Gula", "Jus Anggur"], detail: "1. Kocok 3 kuning telur, 3 sdm gula, dan 2 sdm jus anggur.\n2. Masak di atas uap air (double boiler).\n3. Gunakan whisk hingga mengental dan berbusa." },
+
+    // --- 🇰🇷 KOREA (15) ---
+    { nama: "Kimchi", img: "assets/kimchi.jpg", negara: "Korea", tipe: "Pembuka", level: "Susah", bahan: ["Sawi Putih", "Gochugaru", "Kecap Ikan", "Bawang Putih"], detail: "1. Garami 1 sawi putih 2 jam, bilas.\n2. Balur pasta (3 sdm gochugaru, baput, jahe, 2 sdm kecap ikan, gula).\n3. Diamkan minimal 1 hari." },
+    { nama: "Tteokbokki", img: "assets/tteokbokki.jpg", negara: "Korea", tipe: "Pembuka", level: "Sedang", bahan: ["Tteok", "Eomuk", "Gochujang", "Gochugaru"], detail: "1. Rebus 200g tteok dan 1 eomuk dalam 400ml air.\n2. Masukkan bumbu (2 sdm gochujang, gochugaru, kecap asin, gula).\n3. Masak hingga kental." },
+    { nama: "Mandu", img: "assets/mandu.jpg", negara: "Korea", tipe: "Pembuka", level: "Susah", bahan: ["Ayam Cincang", "Tahu", "Kulit Pangsit", "Minyak Wijen"], detail: "1. Isi 15 kulit pangsit dengan campuran 150g ayam, 50g tahu hancur, kucai, minyak wijen.\n2. Lipat rapi.\n3. Kukus atau goreng hingga matang." },
+    { nama: "Japchae", img: "assets/japchae.jpg", negara: "Korea", tipe: "Utama", level: "Susah", bahan: ["Soun Korea", "Minyak Wijen", "Kecap Asin", "Bayam"], detail: "1. Rebus 150g soun Korea. Tumis wortel, bayam, jamur.\n2. Campur mie dan sayur.\n3. Beri 3 sdm kecap asin, 2 sdm minyak wijen, 1 sdm gula." },
+    { nama: "Pajeon", img: "assets/pajeon.jpg", negara: "Korea", tipe: "Pembuka", level: "Sedang", bahan: ["Daun Bawang", "Tepung Terigu", "Maizena", "Telur"], detail: "1. Campur 100g terigu, 20g maizena, 1 telur, 150ml air es.\n2. Tata daun bawang utuh di pan, tuang adonan.\n3. Balik hingga garing kedua sisi." },
+    { nama: "Bibimbap", img: "assets/bibimbap.jpg", negara: "Korea", tipe: "Utama", level: "Sedang", bahan: ["Nasi", "Gochujang", "Daging Sapi", "Minyak Wijen"], detail: "1. Tata nasi, topping tumisan wortel, tauge, bayam, daging sapi.\n2. Beri 1 sdm saus (gochujang + minyak wijen + gula).\n3. Aduk rata sebelum dimakan." },
+    { nama: "Bulgogi", img: "assets/bulgogi.jpg", negara: "Korea", tipe: "Utama", level: "Sedang", bahan: ["Daging Sapi", "Kecap Asin", "Madu", "Pir"], detail: "1. Marinasi 250g sapi iris tipis (3 sdm kecap asin, minyak wijen, 1 sdm madu, 2 baput, parutan pir).\n2. Diamkan.\n3. Tumis cepat dengan api besar." },
+    { nama: "Samgyeopsal", img: "assets/samgyeopsal.jpg", negara: "Korea", tipe: "Utama", level: "Mudah", bahan: ["Perut Sapi", "Doenjang", "Gochujang"], detail: "1. Panggang 250g daging iris tebal tanpa bumbu hingga garing.\n2. Sajikan dengan saus ssamjang (doenjang, gochujang, minyak wijen).\n3. Makan dengan selada." },
+    { nama: "Kimchi Fried Rice", img: "assets/kimchi_fried_rice.jpg", negara: "Korea", tipe: "Utama", level: "Mudah", bahan: ["Nasi", "Kimchi", "Gochujang", "Minyak Wijen"], detail: "1. Tumis 100g kimchi potong.\n2. Masukkan 1 piring nasi, 1 sdm gochujang, dan 1 sdm minyak wijen.\n3. Sajikan dengan telur mata sapi." },
+    { nama: "Jajangmyeon", img: "assets/jajangmyeon.jpg", negara: "Korea", tipe: "Utama", level: "Sedang", bahan: ["Mie Gandum", "Pasta Kedelai Hitam", "Daging Sapi"], detail: "1. Mie gandum disiram saus hitam.\n2. Saus: tumis 3 sdm pasta hitam (chunjang), masukkan daging, bombay.\n3. Tambahkan sedikit air maizena." },
+    { nama: "Bingsu", img: "assets/bingsu.jpg", negara: "Korea", tipe: "Penutup", level: "Mudah", bahan: ["Es Susu", "Pasta Kacang Merah", "Susu Kental Manis"], detail: "1. Serut es susu hingga halus.\n2. Beri topping 3 sdm pasta kacang merah dan tteok kecil.\n3. Beri kucuran susu kental manis." },
+    { nama: "Hotteok", img: "assets/hotteok.jpg", negara: "Korea", tipe: "Penutup", level: "Sedang", bahan: ["Tepung Terigu", "Ragi", "Gula Merah", "Kayu Manis"], detail: "1. Buat adonan roti ragi, diamkan.\n2. Isi dengan campuran gula merah, kayu manis, dan kacang tanah.\n3. Goreng sambil dipipihkan." },
+    { nama: "Yakgwa", img: "assets/yakgwa.jpg", negara: "Korea", tipe: "Penutup", level: "Susah", bahan: ["Tepung Terigu", "Minyak Wijen", "Madu", "Jahe"], detail: "1. Campur 100g terigu, minyak wijen, 2 sdm madu.\n2. Cetak, goreng api kecil.\n3. Rendam dalam sirup madu dan jahe parut." },
+    { nama: "Songpyeon", img: "assets/songpyeon.jpg", negara: "Korea", tipe: "Penutup", level: "Susah", bahan: ["Tepung Beras Ketan", "Wijen", "Madu"], detail: "1. Uleni tepung beras ketan dengan air panas.\n2. Isi wijen tumbuk + madu, bentuk bulan sabit.\n3. Kukus 20 menit di atas daun pinus." },
+    { nama: "Dasik", img: "assets/dasik.jpg", negara: "Korea", tipe: "Penutup", level: "Susah", bahan: ["Bubuk Wijen Hitam", "Madu"], detail: "1. Campur 100g bubuk wijen hitam dengan 3 sdm madu hingga padat.\n2. Tekan ke dalam cetakan pola tradisional.\n3. Lepaskan perlahan dan sajikan." }
+];
+    // Fungsi Pembantu: Mendapatkan icon yang cocok untuk setiap bahan
+    const getIconForBahan = (bahan) => {
+        const iconMap = {
+            "Ayam": "fa-solid fa-drumstick-bite", "Ayam Cincang": "fa-solid fa-drumstick-bite",
+            "Daging Sapi": "fa-solid fa-cow", "Iga Sapi": "fa-solid fa-bone",
+            "Ikan Salmon": "fa-solid fa-fish", "Ikan Tuna": "fa-solid fa-fish",
+            "Ikan Tenggiri": "fa-solid fa-fish", "Cumi": "fa-solid fa-fish-fins",
+            "Udang": "fa-solid fa-shrimp", "Telur": "fa-solid fa-egg", "Kentang": "fa-solid fa-egg",
+            "Keju Mozarella": "fa-solid fa-cheese", "Cream Cheese": "fa-solid fa-cheese", "Mentega": "fa-solid fa-cheese",
+            "Susu": "fa-solid fa-glass-water", "Santan": "fa-solid fa-glass-water",
+            "Beras": "fa-solid fa-bowl-rice", "Beras Ketan": "fa-solid fa-bowl-rice", "Nasi": "fa-solid fa-bowl-rice",
+            "Bihun": "fa-solid fa-bowl-food", "Spaghetti": "fa-solid fa-bowl-food", "Udon": "fa-solid fa-bowl-food", "Miso": "fa-solid fa-bowl-food",
+            "Pasta": "fa-solid fa-utensils",
+            "Cabe": "fa-solid fa-pepper-hot", "Cabe Bubuk": "fa-solid fa-pepper-hot", "Paprika": "fa-solid fa-pepper-hot", "Lada": "fa-solid fa-pepper-hot",
+            "Wortel": "fa-solid fa-carrot", "Jahe": "fa-solid fa-carrot", "Kunyit": "fa-solid fa-carrot", "Lengkuas": "fa-solid fa-carrot",
+            "Apel": "fa-solid fa-apple-whole", "Tomat": "fa-solid fa-apple-whole", "Jeruk Nipis": "fa-solid fa-lemon", "Lemon": "fa-solid fa-lemon",
+            "Cokelat": "fa-solid fa-cookie", "Cokelat Bubuk": "fa-solid fa-mug-hot",
+            "Roti Tawar": "fa-solid fa-bread-slice", "Sosis": "fa-solid fa-hotdog", "Donat": "fa-solid fa-cookie-bite",
+            "Bawang Bombay": "fa-solid fa-seedling", "Bawang Merah": "fa-solid fa-seedling", "Bawang Putih": "fa-solid fa-seedling",
+            "Kacang Panjang": "fa-solid fa-seedling", "Kacang Tanah": "fa-solid fa-seedling", "Tauge": "fa-solid fa-seedling",
+            "Rebung": "fa-solid fa-seedling", "Wijen": "fa-solid fa-seedling", "Jagung": "fa-solid fa-seedling", "Alpukat": "fa-solid fa-seedling",
+            "Daun Bawang": "fa-solid fa-leaf", "Daun Jeruk": "fa-solid fa-leaf", "Daun Pisang": "fa-solid fa-leaf",
+            "Daun Salam": "fa-solid fa-leaf", "Bayam": "fa-solid fa-leaf", "Sawi": "fa-solid fa-leaf",
+            "Serai": "fa-solid fa-leaf", "Kol": "fa-solid fa-leaf", "Kubis": "fa-solid fa-leaf",
+            "Wakame": "fa-solid fa-leaf", "Nanas": "fa-solid fa-leaf", "Nangka": "fa-solid fa-leaf",
+            "Timun": "fa-solid fa-leaf", "Basil": "fa-solid fa-leaf", "Asam Jawa": "fa-solid fa-leaf",
+            "Garam": "fa-solid fa-spoon", "Gula": "fa-solid fa-cube", "Gula Merah": "fa-solid fa-cube",
+            "Tahu": "fa-solid fa-cube", "Agar-Agar": "fa-solid fa-cube",
+            "Madu": "fa-solid fa-jar", "Gochujang": "fa-solid fa-jar", "Kimchi": "fa-solid fa-jar",
+            "Kecap Asin": "fa-solid fa-bottle-droplet", "Kecap Manis": "fa-solid fa-bottle-droplet",
+            "Minyak Wijen": "fa-solid fa-bottle-droplet", "Mirin": "fa-solid fa-bottle-droplet",
+            "Tepung Terigu": "fa-solid fa-sack-xmark", "Tepung Beras": "fa-solid fa-sack-xmark",
+            "Tepung Tapioka": "fa-solid fa-sack-xmark", "Tepung Ketan": "fa-solid fa-sack-xmark",
+            "Tempe": "fa-solid fa-boxes-stacked", "Kayu Manis": "fa-solid fa-tree",
+            "Kulit Pangsit": "fa-solid fa-square", "Kulit Lumpia": "fa-solid fa-scroll", "Nori": "fa-solid fa-scroll",
+            "Ragi": "fa-solid fa-flask", "Rumput Laut": "fa-solid fa-water"
+        };
+        return iconMap[bahan] || "fa-solid fa-utensils";
+    };
+
+    // 3. LOGIKA INTERAKSI
+    const listContainer = document.getElementById('ingredient-list');
+    const navContainer = document.getElementById('alphabet-links');
+    const countDisplay = document.getElementById('count');
+    const pillsBahan1 = document.getElementById('live-pills-bahan');
+    const pillsBahan2 = document.getElementById('live-pills-filter');
+
+    Object.keys(dataBahan).forEach(letter => {
+        const btn = document.createElement('button');
+        btn.className = "min-w-[44px] h-[44px] flex items-center justify-center border rounded-full text-sm font-bold text-slate-400 bg-white mb-2 mx-1 flex-shrink-0 hover:border-green-500 hover:text-green-500 transition-all";
+        btn.innerText = letter;
+        btn.onclick = () => { 
+            const target = document.getElementById(`sec-${letter}`); 
+            if(target) listContainer.scrollTo({ top: listContainer.scrollTop + target.getBoundingClientRect().top - listContainer.getBoundingClientRect().top, behavior: 'smooth' }); 
+        };
+        navContainer.appendChild(btn);
+
+        const section = document.createElement('section'); section.id = `sec-${letter}`; section.className = "mb-12";
+        let html = `<div class="flex items-center mb-6 pt-4"><span class="text-2xl font-black text-slate-700 mr-4">${letter}</span><div class="flex-1 h-[1px] bg-slate-100"></div></div><div class="grid grid-cols-2 md:grid-cols-5 gap-4">`;
+        
+        // Loop dan render item dengan ICON
+        dataBahan[letter].forEach(item => { 
+            let icon = getIconForBahan(item);
+            html += `<div class="rect-item ing-item"><i class="${icon} mr-2 opacity-60"></i> <span>${item}</span></div>`; 
+        });
+        section.innerHTML = html + `</div>`; listContainer.appendChild(section);
+    });
+
+    function updateUI() {
+        // Ambil dari tag 'span' lalu hapus spasi kosong (trim)
+        const selected = Array.from(document.querySelectorAll('.ing-item.active')).map(el => el.querySelector('span').innerText.trim());
+        countDisplay.innerText = selected.length;
+        const content = selected.length === 0 
+            ? '<p class="text-slate-400 text-xs italic p-2">Belum ada bahan...</p>' 
+            : selected.map(txt => `<div class="selected-pill" onclick="removePill('${txt}')"><span>✓ ${txt}</span><i class="fa-solid fa-xmark ml-1 text-[10px] opacity-60"></i></div>`).join('');
+        pillsBahan1.innerHTML = content;
+        pillsBahan2.innerHTML = content;
+    }
+
+    window.removePill = (name) => { 
+        document.querySelectorAll('.ing-item').forEach(i => { if(i.querySelector('span').innerText.trim() === name) i.classList.remove('active'); }); 
+        updateUI(); 
+    };
+
+    listContainer.addEventListener('click', (e) => { 
+        // Tangani klik jika user mengklik ikon atau teks yang ada di dalam .ing-item
+        let targetItem = e.target.closest('.ing-item');
+        if (targetItem) { 
+            targetItem.classList.toggle('active'); 
+            updateUI(); 
+        } 
+    });
+
+    document.querySelectorAll('.filter-item').forEach(btn => {
+        btn.onclick = () => {
+            Array.from(btn.parentElement.children).forEach(sibling => sibling.classList.remove('active'));
+            btn.classList.add('active');
+        };
+    });
+
+    document.getElementById('search-bahan').addEventListener('input', function(e) {
+        const term = e.target.value.toLowerCase();
+        document.querySelectorAll('#ingredient-list section').forEach(section => {
+            const items = section.querySelectorAll('.ing-item');
+            let hasVisible = false;
+            items.forEach(item => {
+                const match = item.querySelector('span').innerText.trim().toLowerCase().includes(term);
+                item.classList.toggle('hidden', !match);
+                if (match) hasVisible = true;
+            });
+            section.style.display = hasVisible ? 'block' : 'none';
+        });
+    });
+
+    window.tampilkanFilter = () => { 
+        document.getElementById('panel-bahan').classList.add('hidden'); 
+        document.getElementById('panel-filter').classList.remove('hidden'); 
+        window.scrollTo({top: 0, behavior: 'smooth'}); 
+    };
+    window.kembaliKeBahan = () => { 
+        document.getElementById('panel-filter').classList.add('hidden'); 
+        document.getElementById('panel-bahan').classList.remove('hidden'); 
+        window.scrollTo({top: 0, behavior: 'smooth'}); 
+    };
+
+    // 4. SISTEM PAKAR & RENDER HASIL
+    window.prosesHasilAkhir = () => {
+        const bahanUser = Array.from(document.querySelectorAll('.ing-item.active')).map(el => el.querySelector('span').innerText.trim().toLowerCase());
+        const negara = document.querySelector('#filter-negara .active')?.innerText.trim();
+        const tipe = document.querySelector('#filter-tipe .active')?.innerText.trim();
+        const level = document.querySelector('#filter-level .active')?.innerText.trim();
+
+        if (typeof allRecipes === 'undefined') return;
+
+        let hasil = allRecipes.filter(r => {
+            const mNegara = !negara || negara === "Semua" || r.negara === negara;
+            const mTipe = !tipe || tipe === "Semua" || r.tipe === tipe;
+            const mLevel = !level || level === "Semua" || r.level === level;
+            const bahanResep = r.bahan.map(b => b.toLowerCase());
+            const bahanCocok = bahanResep.filter(b => bahanUser.includes(b));
+            
+            return mNegara && mTipe && mLevel && (bahanUser.length === 0 || bahanCocok.length > 0);
+        }).map(r => {
+            const bahanResep = r.bahan.map(b => b.toLowerCase());
+            const bahanCocok = bahanResep.filter(b => bahanUser.includes(b));
+            const persentase = Math.round((bahanCocok.length / bahanResep.length) * 100);
+            return { ...r, persentase, kurang: bahanResep.length - bahanCocok.length };
+        });
+
+        hasil.sort((a, b) => b.persentase - a.persentase);
+        renderHasil(hasil, bahanUser);
+        
+        const hasilSec = document.getElementById('hasil-rekomendasi');
+        if(hasilSec) hasilSec.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    function renderHasil(data, bahanUser) {
+        const grid = document.getElementById('hasil-grid');
+        const judul = document.getElementById('judul-hasil');
+        if(!grid || !judul) return;
+
+        grid.innerHTML = "";
+
+        if (data.length === 0) {
+            judul.innerHTML = `<span class="text-slate-400">Tidak Ada Hasil Rekomendasi</span>`;
+            grid.innerHTML = `
+            <div class="col-span-full py-20 text-center flex flex-col items-center justify-center">
+                <div class="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center text-4xl text-slate-300 mb-6">
+                    <i class="fa-solid fa-face-frown-open"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-600 mb-2">Resep Tidak Ditemukan</h3>
+                <p class="text-slate-400 max-w-md mx-auto">Coba kurangi filter tingkat kesulitan/negara, atau tambahkan variasi bahan masakan lain.</p>
+            </div>`;
+            return;
+        }
+
+        judul.innerHTML = `Rekomendasi <span class="text-green-500">Masakan</span> Kamu`;
+
+        data.forEach(r => {
+            let statusBadge = "";
+            
+            if (bahanUser.length > 0) {
+                if (r.kurang === 0) {
+                    statusBadge = `
+                    <div class="mt-4 pt-4 border-t border-slate-100">
+                        <div class="flex items-center justify-center bg-green-50 px-4 py-2.5 rounded-[1rem]">
+                            <span class="text-xs font-black text-green-600 flex items-center gap-2">
+                                <i class="fa-solid fa-circle-check text-green-500"></i> 100% BAHAN LENGKAP!
+                            </span>
+                        </div>
+                    </div>`;
+                } else {
+                    const bahanResep = r.bahan.map(b => b.toLowerCase());
+                    const kurangBahan = r.bahan.filter(b => !bahanUser.includes(b.toLowerCase()));
+                    const textKurang = kurangBahan.slice(0, 2).join(', ') + (kurangBahan.length > 2 ? `...` : '');
+                    
+                    statusBadge = `
+                    <div class="mt-4 pt-4 border-t border-slate-100">
+                        <div class="flex items-center justify-between bg-amber-50 px-4 py-2.5 rounded-[1rem] mb-2">
+                            <span class="text-xs font-black text-amber-600 flex items-center gap-2">
+                                <i class="fa-solid fa-chart-pie text-amber-500"></i> COCOK ${r.persentase}%
+                            </span>
+                            <span class="text-[10px] font-bold text-amber-500/80 bg-white px-2 py-1 rounded-md">Kurang ${r.kurang} Bahan</span>
+                        </div>
+                        <p class="text-[10px] text-slate-400 font-medium px-2 truncate" title="Butuh: ${kurangBahan.join(', ')}">
+                            <span class="text-slate-500 font-bold">Butuh:</span> ${textKurang}
+                        </p>
+                    </div>`;
+                }
+            }
+
+            const warnaLevel = r.level === 'Mudah' ? 'bg-green-500' : r.level === 'Sedang' ? 'bg-amber-500' : 'bg-red-500';
+
+            grid.innerHTML += `
+            <div onclick="bukaModal('${r.nama}')" class="group bg-white rounded-[2.5rem] overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(34,197,94,0.15)] border border-slate-100 hover:border-green-300 hover:-translate-y-2 transition-all duration-300 cursor-pointer flex flex-col h-full">
+                
+                <!-- Gambar & Label -->
+                <div class="relative h-52 overflow-hidden bg-slate-100">
+                    <img src="${r.img || 'assets/default.jpg'}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out" alt="${r.nama}">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent"></div>
+                    
+                    <div class="absolute top-4 left-4">
+                        <span class="bg-white/95 backdrop-blur-sm text-slate-800 text-[10px] font-black px-3 py-1.5 rounded-full shadow-sm">
+                            ${r.negara}
+                        </span>
+                    </div>
+                    <div class="absolute top-4 right-4">
+                        <span class="${warnaLevel} text-white text-[10px] font-black px-3 py-1.5 rounded-full shadow-sm">
+                            ${r.level}
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Konten Tulisan -->
+                <div class="p-6 flex-1 flex flex-col bg-white relative z-10 -mt-4 rounded-t-[2rem]">
+                    <span class="text-[10px] font-black tracking-widest text-green-500 uppercase mb-1">${r.tipe}</span>
+                    <h3 class="font-extrabold text-xl text-slate-800 leading-tight mb-2 group-hover:text-green-600 transition-colors">${r.nama}</h3>
+                    <div class="flex-1"></div>
+                    ${statusBadge}
+                </div>
+            </div>`;
+        });
+    }
+
+    // 5. MODAL DETAIL
+    window.bukaModal = (namaResep) => {
+        const resep = allRecipes.find(r => r.nama === namaResep);
+        if(!resep) return;
+
+        const bahanUser = Array.from(document.querySelectorAll('.ing-item.active')).map(el => el.querySelector('span').innerText.trim().toLowerCase());
+        const kurang = resep.bahan.filter(b => !bahanUser.includes(b.toLowerCase()));
+
+        document.getElementById('modal-judul').innerText = resep.nama;
+        document.getElementById('modal-sub').innerText = `${resep.negara} • ${resep.tipe} • ${resep.level}`;
+        
+        let htmlContent = "";
+
+        // Menambahkan Gambar
+        htmlContent += `
+        <div class="w-full h-64 md:h-80 rounded-[2rem] overflow-hidden mb-8 shadow-sm">
+            <img src="${resep.img || 'assets/default.jpg'}" alt="${resep.nama}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700 ease-out">
+        </div>`;
+
+        if(kurang.length > 0 && bahanUser.length > 0) {
+            htmlContent += `
+            <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl mb-6 text-xs text-amber-800 flex gap-3 items-start">
+                <i class="fa-solid fa-lightbulb mt-1 text-amber-500"></i>
+                <div>Catatan: Kamu masih kekurangan <span class="font-bold text-red-600">${kurang.join(', ')}</span> untuk membuat resep ini secara sempurna.</div>
+            </div>`;
+        }
+
+        htmlContent += `<div class="mb-8"><p class="font-black text-[10px] text-slate-400 uppercase tracking-widest mb-4">Daftar Bahan:</p><ul class="grid grid-cols-2 gap-3 text-sm">`;
+        resep.bahan.forEach(b => {
+            const ada = bahanUser.length === 0 ? true : bahanUser.includes(b.toLowerCase());
+            htmlContent += `<li class="${ada ? 'text-green-600 font-bold' : 'text-slate-400'} flex items-center gap-2">
+                <i class="fa-solid ${ada ? 'fa-square-check' : 'fa-square'}"></i> ${b}
+            </li>`;
+        });
+        htmlContent += `</ul></div>`;
+
+        htmlContent += `<p class="font-black text-[10px] text-slate-400 uppercase tracking-widest mb-4">Cara Membuat:</p><div class="space-y-4">`;
+        const steps = resep.detail.split('\n').filter(s => s.trim() !== "");
+        let counter = 1;
+        steps.forEach(s => {
+            if(s.includes(':')) {
+                htmlContent += `<p class="font-bold text-slate-800 mt-6 border-b pb-1 text-sm">${s}</p>`;
+            } else {
+                htmlContent += `
+                <div class="flex gap-4">
+                    <div class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0 mt-0.5">${counter++}</div>
+                    <p class="text-slate-600 text-sm leading-relaxed">${s.replace(/^\d+\.\s*/, '')}</p>
+                </div>`;
+            }
+        });
+        htmlContent += `</div>`;
+
+        document.getElementById('modal-isi').innerHTML = htmlContent;
+        document.getElementById('modal-resep').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    };
+
+    window.tutupModal = () => {
+        document.getElementById('modal-resep').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    };
+
+    window.onclick = (e) => { if (e.target == document.getElementById('modal-resep')) tutupModal(); };
+
+    // Inisialisasi awal
+    updateUI();
+</script>
+</body>
+</html>

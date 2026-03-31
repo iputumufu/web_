@@ -73,6 +73,28 @@
                 max-width: 100%; 
             }
         }
+        @view-transition {
+            navigation: auto;
+            }
+
+            /* Animasi geser sederhana */
+            ::view-transition-old(root) {
+            animation: 0.8s cubic-bezier(0.7, 0, 0.3, 1) both fade-out,
+                        0.8s cubic-bezier(0.7, 0, 0.3, 1) both slide-to-left;
+            }
+
+            ::view-transition-new(root) {
+            animation: 0.8s cubic-bezier(0.7, 0, 0.3, 1) both fade-in,
+                        0.8s cubic-bezier(0.7, 0, 0.3, 1) both slide-from-right;
+            }
+
+            @keyframes slide-to-left {
+            to { transform: translateX(100vw); }
+            }
+
+            @keyframes slide-from-right {
+            from { transform: translateX(-100vw); }
+            }
     </style>
 </head>
 <body>
