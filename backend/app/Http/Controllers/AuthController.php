@@ -18,7 +18,7 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->merge([
-            'email' => strtolower(trim((string) $request->email)),
+            'email' => User::normalizeEmail($request->email),
         ]);
 
         $validator = Validator::make($request->all(), [
@@ -42,7 +42,12 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => User::resolveRoleForEmail($request->email),
+            'is_verified' => User::shouldReceiveVerifiedBadge($request->email),
+            'email_verified_at' => User::shouldReceiveVerifiedBadge($request->email) ? now() : null,
         ]);
+
+        $user->syncAccountAttributesFromEmail();
 
         $token = $user->createToken('auth-token')->plainTextToken;
 
@@ -60,7 +65,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->merge([
-            'email' => strtolower(trim((string) $request->email)),
+            'email' => User::normalizeEmail($request->email),
         ]);
 
         $validator = Validator::make($request->all(), [
@@ -137,12 +142,19 @@ class AuthController extends Controller
             ], 422);
         }
 
-        $request->user()->update($request->only(['name', 'email']));
+        $payload = $request->only(['name', 'email']);
+
+        if (array_key_exists('email', $payload)) {
+            $payload['email'] = User::normalizeEmail($payload['email']);
+        }
+
+        $request->user()->update($payload);
+        $request->user()->syncAccountAttributesFromEmail();
 
         return response()->json([
             'success' => true,
             'message' => 'Profile updated successfully',
-            'user' => $request->user()
+            'user' => $request->user()->fresh()
         ]);
     }
 
@@ -152,7 +164,7 @@ class AuthController extends Controller
     public function forgotPassword(Request $request)
     {
         $request->merge([
-            'email' => strtolower(trim((string) $request->email)),
+            'email' => User::normalizeEmail($request->email),
         ]);
 
         $validator = Validator::make($request->all(), [

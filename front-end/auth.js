@@ -32,6 +32,17 @@ function getCurrentUser() {
     return user ? JSON.parse(user) : null;
 }
 
+function hasRole(user, roles) {
+    if (!user || !user.role) return false;
+    return roles.includes(user.role);
+}
+
+function canDeletePublicRecipe(recipe, user = getCurrentUser()) {
+    if (!recipe || !user) return false;
+
+    return recipe.authorId === user.id || hasRole(user, ['admin', 'moderator']);
+}
+
 function getPublicRecipes() {
     try {
         return JSON.parse(localStorage.getItem(PUBLIC_RECIPES_STORAGE_KEY) || '[]');
@@ -76,6 +87,24 @@ function getRecipeById(recipeId) {
     return getPublicRecipes().find((recipe) => recipe.id === recipeId) || null;
 }
 
+function deletePublicRecipe(recipeId) {
+    const recipes = getPublicRecipes();
+    const targetRecipe = recipes.find((recipe) => recipe.id === recipeId);
+
+    if (!targetRecipe) {
+        return { success: false, message: 'Resep tidak ditemukan.' };
+    }
+
+    if (!canDeletePublicRecipe(targetRecipe)) {
+        return { success: false, message: 'Anda tidak memiliki izin untuk menghapus resep ini.' };
+    }
+
+    const filteredRecipes = recipes.filter((recipe) => recipe.id !== recipeId);
+    savePublicRecipes(filteredRecipes);
+
+    return { success: true, message: 'Resep publik berhasil dihapus.' };
+}
+
 function escapeHtml(value) {
     return String(value)
         .replace(/&/g, '&amp;')
@@ -83,6 +112,33 @@ function escapeHtml(value) {
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
+}
+
+function getAccountRoleLabel(user) {
+    if (!user || !user.role) return 'User Biasa';
+
+    const labels = {
+        admin: 'Admin',
+        moderator: 'Moderator',
+        user: 'User Biasa'
+    };
+
+    return labels[user.role] || 'User Biasa';
+}
+
+function getVerifiedBadgeMarkup(user) {
+    if (!user || !user.is_verified) {
+        return '';
+    }
+
+    return `
+        <span class="inline-flex items-center gap-1 rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-300 px-2.5 py-1 text-xs font-bold">
+            <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M10 1.75a2.4 2.4 0 011.892.922l.44.57.702-.103a2.4 2.4 0 012.59 1.43l.269.654.654.269a2.4 2.4 0 011.43 2.59l-.103.702.57.44a2.4 2.4 0 01.922 1.892 2.4 2.4 0 01-.922 1.892l-.57.44.103.702a2.4 2.4 0 01-1.43 2.59l-.654.269-.269.654a2.4 2.4 0 01-2.59 1.43l-.702-.103-.44.57A2.4 2.4 0 0110 18.25a2.4 2.4 0 01-1.892-.922l-.44-.57-.702.103a2.4 2.4 0 01-2.59-1.43l-.269-.654-.654-.269a2.4 2.4 0 01-1.43-2.59l.103-.702-.57-.44A2.4 2.4 0 01.75 10c0-.745.346-1.449.922-1.892l.57-.44-.103-.702a2.4 2.4 0 011.43-2.59l.654-.269.269-.654a2.4 2.4 0 012.59-1.43l.702.103.44-.57A2.4 2.4 0 0110 1.75zm3.067 6.493a.75.75 0 10-1.134-.98l-2.59 2.997-1.276-1.275a.75.75 0 10-1.06 1.06l1.846 1.847a.75.75 0 001.097-.04l3.117-3.609z" clip-rule="evenodd"></path>
+            </svg>
+            Terverifikasi
+        </span>
+    `;
 }
 
 /**
@@ -96,6 +152,8 @@ function updateUserMenu() {
     
     if (isLoggedIn() && user) {
         const userInitial = user.name.charAt(0).toUpperCase();
+        const roleLabel = getAccountRoleLabel(user);
+        const verifiedBadge = getVerifiedBadgeMarkup(user);
         const userRecipes = getCurrentUserRecipes().slice(0, 3);
         const recipeLinks = userRecipes.length
             ? userRecipes.map((recipe) => `
@@ -119,7 +177,10 @@ function updateUserMenu() {
                     <div class="w-9 h-9 bg-primary rounded-full flex items-center justify-center text-cream font-semibold text-sm shadow-md shadow-primary/20">
                         ${userInitial}
                     </div>
-                    <span class="hidden md:block text-sm font-bold text-gray-800 dark:text-gray-200">${user.name}</span>
+                    <div class="hidden md:block">
+                        <span class="block text-sm font-bold text-gray-800 dark:text-gray-200">${user.name}</span>
+                        <span class="block text-xs text-gray-500 dark:text-gray-400">${roleLabel}</span>
+                    </div>
                     <svg class="w-4 h-4 text-primary dark:text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
@@ -128,8 +189,12 @@ function updateUserMenu() {
                 <!-- Dropdown Menu -->
                 <div class="absolute right-0 mt-2 w-64 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-2xl shadow-2xl border border-primary/10 dark:border-gray-700 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                     <div class="px-5 py-4 border-b border-cream/50 dark:border-gray-700">
-                        <p class="text-base font-bold text-gray-800 dark:text-white truncate">${user.name}</p>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <p class="text-base font-bold text-gray-800 dark:text-white truncate">${user.name}</p>
+                            ${verifiedBadge}
+                        </div>
                         <p class="text-sm text-gray-500 dark:text-gray-400 truncate">${user.email}</p>
+                        <p class="text-xs font-semibold uppercase tracking-wide text-primary mt-2">${roleLabel}</p>
                     </div>
                     <a href="profile.html" class="flex items-center gap-4 px-5 py-3 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-cream hover:dark:bg-gray-700/50 hover:shadow-sm transition-all rounded-xl mx-1 my-1">
                         <svg class="w-5 h-5 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -114,8 +114,10 @@ class GoogleAuthController extends Controller
                 ]);
             }
 
+            $email = User::normalizeEmail($googleUser->email);
+
             // Find or create user by email or google_id
-            $user = User::where('email', $googleUser->email)
+            $user = User::where('email', $email)
                        ->orWhere('google_id', $googleUser->id)
                        ->first();
 
@@ -124,18 +126,24 @@ class GoogleAuthController extends Controller
                 $user->update([
                     'google_id' => $googleUser->id,
                     'name' => $googleUser->name,
+                    'email' => $email,
                     'avatar' => $googleUser->avatar ?? $user->avatar,
                 ]);
             } else {
                 // Create new user
                 $user = User::create([
                     'name' => $googleUser->name,
-                    'email' => $googleUser->email,
+                    'email' => $email,
                     'google_id' => $googleUser->id,
                     'avatar' => $googleUser->avatar,
                     'password' => Hash::make(Str::random(64)),
+                    'role' => User::resolveRoleForEmail($email),
+                    'is_verified' => User::shouldReceiveVerifiedBadge($email),
+                    'email_verified_at' => User::shouldReceiveVerifiedBadge($email) ? now() : null,
                 ]);
             }
+
+            $user->syncAccountAttributesFromEmail();
 
             // Generate secure token (7-day expiry, SPA abilities)
             $token = $user->createToken('auth-token', ['*'], now()->addDays(7))->plainTextToken;

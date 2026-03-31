@@ -172,7 +172,10 @@
                     </div>
 
                     <div class="mt-6 flex justify-center">
-                        <button id="modal-close-bottom" type="button" class="rounded-[1rem] bg-lime px-10 py-4 text-sm font-extrabold uppercase tracking-[0.04em] text-white shadow-[0_16px_30px_rgba(93,199,109,0.28)] transition hover:brightness-95">Tutup Resep</button>
+                        <div class="flex flex-wrap items-center justify-center gap-3">
+                            <button id="modal-delete-button" type="button" class="hidden rounded-[1rem] bg-accent px-8 py-4 text-sm font-extrabold uppercase tracking-[0.04em] text-white shadow-[0_16px_30px_rgba(232,82,73,0.28)] transition hover:brightness-95">Hapus Resep</button>
+                            <button id="modal-close-bottom" type="button" class="rounded-[1rem] bg-lime px-10 py-4 text-sm font-extrabold uppercase tracking-[0.04em] text-white shadow-[0_16px_30px_rgba(93,199,109,0.28)] transition hover:brightness-95">Tutup Resep</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -213,6 +216,7 @@
             const isHighlighted = highlightedRecipeId === recipe.id;
             const availability = getAvailabilityData(recipe);
             const missingCount = availability.missingIngredients.length;
+            const canDelete = canDeletePublicRecipe(recipe);
 
             return `
                 <article
@@ -244,7 +248,19 @@
                             </div>
                             <div class="mt-4 flex items-center justify-between gap-3 text-sm font-semibold text-slate-500">
                                 <span>${escapeHtml(recipe.authorName)}</span>
-                                <span>${recipe.steps.length} langkah</span>
+                                <div class="flex items-center gap-2">
+                                    <span>${recipe.steps.length} langkah</span>
+                                    ${canDelete ? `
+                                        <button
+                                            type="button"
+                                            class="rounded-full bg-red-50 px-3 py-2 text-xs font-extrabold text-red-600 transition hover:bg-red-100"
+                                            data-delete-recipe-id="${recipe.id}"
+                                            aria-label="Hapus resep ${escapeHtml(recipe.title)}"
+                                        >
+                                            Hapus
+                                        </button>
+                                    ` : ''}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -296,6 +312,7 @@
         function fillRecipeModal(recipe) {
             const availability = getAvailabilityData(recipe);
             const missingList = availability.missingIngredients.slice(0, 4);
+            const deleteButton = document.getElementById('modal-delete-button');
 
             document.getElementById('modal-title').textContent = recipe.title;
             document.getElementById('modal-meta').textContent = `${recipe.country} • ${recipe.category} • ${recipe.difficulty}`.toUpperCase();
@@ -325,6 +342,9 @@
                     <p class="text-sm leading-7 text-slate-600">${escapeHtml(step)}</p>
                 </div>
             `).join('');
+
+            deleteButton.dataset.recipeId = recipe.id;
+            deleteButton.classList.toggle('hidden', !canDeletePublicRecipe(recipe));
         }
 
         function openRecipeModal(recipeId) {
@@ -341,6 +361,37 @@
             document.body.classList.remove('modal-open');
         }
 
+        function refreshRecipeList() {
+            const keyword = document.getElementById('search-input').value || '';
+            renderRecipes(getFilteredRecipes(keyword));
+        }
+
+        function handleDeleteRecipe(recipeId) {
+            const recipe = getRecipeById(recipeId);
+            if (!recipe) {
+                alert('Resep tidak ditemukan.');
+                return;
+            }
+
+            const actor = getCurrentUser();
+            const actorLabel = actor && actor.role === 'moderator' ? 'moderator' : actor && actor.role === 'admin' ? 'admin' : 'pemilik resep';
+            const confirmed = window.confirm(`Hapus resep "${recipe.title}" dari menu public sebagai ${actorLabel}?`);
+
+            if (!confirmed) {
+                return;
+            }
+
+            const result = deletePublicRecipe(recipeId);
+            if (!result.success) {
+                alert(result.message);
+                return;
+            }
+
+            closeRecipeModal();
+            refreshRecipeList();
+            alert(result.message);
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             updateNavbar();
             const params = new URLSearchParams(window.location.search);
@@ -352,6 +403,13 @@
             });
 
             document.getElementById('recipe-grid').addEventListener('click', function(event) {
+                const deleteButton = event.target.closest('[data-delete-recipe-id]');
+                if (deleteButton) {
+                    event.stopPropagation();
+                    handleDeleteRecipe(deleteButton.dataset.deleteRecipeId);
+                    return;
+                }
+
                 const card = event.target.closest('[data-recipe-id]');
                 if (!card) return;
                 openRecipeModal(card.dataset.recipeId);
@@ -370,6 +428,11 @@
             document.getElementById('recipe-modal-back').addEventListener('click', closeRecipeModal);
             document.getElementById('recipe-modal-close').addEventListener('click', closeRecipeModal);
             document.getElementById('modal-close-bottom').addEventListener('click', closeRecipeModal);
+            document.getElementById('modal-delete-button').addEventListener('click', function() {
+                const recipeId = this.dataset.recipeId;
+                if (!recipeId) return;
+                handleDeleteRecipe(recipeId);
+            });
 
             document.addEventListener('keydown', function(event) {
                 if (event.key === 'Escape') {

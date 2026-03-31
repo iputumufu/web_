@@ -111,8 +111,10 @@ class FacebookAuthController extends Controller
                 ]);
             }
 
+            $email = User::normalizeEmail($facebookUser->getEmail());
+
             // Find or create user by email or facebook_id
-            $user = User::where('email', $facebookUser->getEmail())
+            $user = User::where('email', $email)
                        ->orWhere('facebook_id', $facebookUser->getId())
                        ->first();
 
@@ -120,18 +122,24 @@ class FacebookAuthController extends Controller
                 // Link Facebook ID and update profile if needed
                 $user->update([
                     'facebook_id' => $facebookUser->getId(),
+                    'email' => $email,
                     'avatar' => $facebookUser->getAvatar() ?? $user->avatar,
                 ]);
             } else {
                 // Create new user
                 $user = User::create([
                     'name' => $facebookUser->getName(),
-                    'email' => $facebookUser->getEmail(),
+                    'email' => $email,
                     'facebook_id' => $facebookUser->getId(),
                     'avatar' => $facebookUser->getAvatar(),
                     'password' => Hash::make(Str::random(64)),
+                    'role' => User::resolveRoleForEmail($email),
+                    'is_verified' => User::shouldReceiveVerifiedBadge($email),
+                    'email_verified_at' => User::shouldReceiveVerifiedBadge($email) ? now() : null,
                 ]);
             }
+
+            $user->syncAccountAttributesFromEmail();
 
             // Generate secure token (7-day expiry)
             $token = $user->createToken('auth-token', ['*'], now()->addDays(7))->plainTextToken;

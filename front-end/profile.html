@@ -140,6 +140,12 @@
                         <div class="pb-4">
                             <div class="flex items-center gap-3 flex-wrap">
                                 <h2 id="hero-user-name" class="text-4xl md:text-5xl font-extrabold text-white tracking-tight"></h2>
+                                <span id="hero-verified-badge" class="hidden items-center gap-1 rounded-full bg-sky-500/20 text-white px-3 py-1 text-sm font-bold">
+                                    <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M10 1.75a2.4 2.4 0 011.892.922l.44.57.702-.103a2.4 2.4 0 012.59 1.43l.269.654.654.269a2.4 2.4 0 011.43 2.59l-.103.702.57.44a2.4 2.4 0 01.922 1.892 2.4 2.4 0 01-.922 1.892l-.57.44.103.702a2.4 2.4 0 01-1.43 2.59l-.654.269-.269.654a2.4 2.4 0 01-2.59 1.43l-.702-.103-.44.57A2.4 2.4 0 0110 18.25a2.4 2.4 0 01-1.892-.922l-.44-.57-.702.103a2.4 2.4 0 01-2.59-1.43l-.269-.654-.654-.269a2.4 2.4 0 01-1.43-2.59l.103-.702-.57-.44A2.4 2.4 0 01.75 10c0-.745.346-1.449.922-1.892l.57-.44-.103-.702a2.4 2.4 0 011.43-2.59l.654-.269.269-.654a2.4 2.4 0 012.59-1.43l.702.103.44-.57A2.4 2.4 0 0110 1.75zm3.067 6.493a.75.75 0 10-1.134-.98l-2.59 2.997-1.276-1.275a.75.75 0 10-1.06 1.06l1.846 1.847a.75.75 0 001.097-.04l3.117-3.609z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Centang Biru
+                                </span>
                                 <button type="button" id="edit-hero-button" class="text-white/90 hover:text-white transition-colors" aria-label="Edit profil">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 11l6.232-6.232a2.5 2.5 0 113.536 3.536L12.536 14.536a4 4 0 01-1.414.95L8 16l.514-3.122A4 4 0 019 11z"></path>
@@ -185,14 +191,8 @@
                         <div class="stat-card rounded-[1.7rem] p-5 flex items-center gap-4">
                             <div class="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-3xl">👨‍🍳</div>
                             <div>
-                                <p class="text-2xl font-extrabold text-black dark:text-white" id="profile-role">Koki Amatir</p>
-                                <select id="profile-role-input" class="editable-field hidden mt-3 w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-2xl text-gray-800 dark:text-white focus:outline-none focus:border-primary transition-colors">
-                                    <option value="Koki Amatir">Koki Amatir</option>
-                                    <option value="Koki Rumahan">Koki Rumahan</option>
-                                    <option value="Food Explorer">Food Explorer</option>
-                                    <option value="Home Chef">Home Chef</option>
-                                </select>
-                                <p class="text-amber-400 text-lg tracking-wider" id="profile-stars">★☆☆☆☆</p>
+                                <p class="text-2xl font-extrabold text-black dark:text-white" id="account-role">User Biasa</p>
+                                <p class="text-base text-gray-600 dark:text-gray-300" id="account-verified-status">Belum terverifikasi</p>
                             </div>
                         </div>
                         <div class="stat-card rounded-[1.7rem] p-5 flex items-center gap-4">
@@ -395,36 +395,20 @@
             localStorage.setItem(getProfileMetaStorageKey(), JSON.stringify(meta));
         }
 
-        function getRoleStars(role) {
-            const roleStarsMap = {
-                'Koki Amatir': '★☆☆☆☆',
-                'Koki Rumahan': '★★★☆☆',
-                'Food Explorer': '★★☆☆☆',
-                'Home Chef': '★★★★☆'
-            };
-
-            return roleStarsMap[role] || '★☆☆☆☆';
-        }
-
         function applyProfileMeta(meta, fallbackName, fallbackDate) {
             const shortBio = meta.shortBio || `${fallbackName} adalah pengguna aktif MasakYuk yang siap eksplor resep baru.`;
             const description = meta.description || `${fallbackName} bergabung di MasakYuk pada ${fallbackDate}. Profil ini akan menampilkan informasi dasar akun secara otomatis saat user login, termasuk nama, email, tanggal bergabung, dan identitas singkat pengguna.`;
             const favoriteFood = meta.favoriteFood || 'Indomie Goreng';
             const tagline = meta.tagline || `Halo ${fallbackName}, siap menemukan resep favoritmu hari ini.`;
-            const role = meta.role || 'Koki Amatir';
-            const stars = meta.stars || getRoleStars(role);
 
             document.getElementById('hero-tagline').textContent = tagline;
             document.getElementById('short-bio').textContent = shortBio;
             document.getElementById('profile-description').textContent = description;
             document.getElementById('favorite-food').textContent = favoriteFood;
-            document.getElementById('profile-role').textContent = role;
-            document.getElementById('profile-stars').textContent = stars;
 
             document.getElementById('profile-description-input').value = description;
             document.getElementById('favorite-food-input').value = favoriteFood;
             document.getElementById('short-bio-input').value = shortBio;
-            document.getElementById('profile-role-input').value = role;
         }
 
         function toggleAboutEditMode(isEditing) {
@@ -434,9 +418,25 @@
             document.getElementById('favorite-food-input').classList.toggle('hidden', !isEditing);
             document.getElementById('short-bio').classList.toggle('hidden', isEditing);
             document.getElementById('short-bio-input').classList.toggle('hidden', !isEditing);
-            document.getElementById('profile-role').classList.toggle('hidden', isEditing);
-            document.getElementById('profile-role-input').classList.toggle('hidden', !isEditing);
             document.getElementById('about-edit-actions').classList.toggle('hidden', !isEditing);
+        }
+
+        function getSystemRoleLabel(role) {
+            const labels = {
+                admin: 'Admin',
+                moderator: 'Moderator',
+                user: 'User Biasa'
+            };
+
+            return labels[role] || 'User Biasa';
+        }
+
+        function applyAccountIdentity(user) {
+            document.getElementById('account-role').textContent = getSystemRoleLabel(user.role);
+            document.getElementById('account-verified-status').textContent = user.is_verified ? 'Terverifikasi' : 'Belum terverifikasi';
+            const heroBadge = document.getElementById('hero-verified-badge');
+            heroBadge.classList.toggle('hidden', !user.is_verified);
+            heroBadge.classList.toggle('inline-flex', !!user.is_verified);
         }
 
         // Check authentication and load user data
@@ -485,6 +485,7 @@
                     document.getElementById('hero-user-name').textContent = userName;
                     document.getElementById('user-email').textContent = user.email;
                     document.getElementById('user-id').textContent = '#' + user.id;
+                    applyAccountIdentity(user);
                     
                     syncAvatarInitial(userName.charAt(0).toUpperCase());
                     document.getElementById('user-created').textContent = formattedCreatedDate;
@@ -534,6 +535,7 @@
                     document.getElementById('user-name').textContent = data.user.name;
                     document.getElementById('hero-user-name').textContent = data.user.name;
                     document.getElementById('user-email').textContent = data.user.email;
+                    applyAccountIdentity(data.user);
                     syncAvatarInitial(data.user.name.charAt(0).toUpperCase());
                     loadSavedAvatar();
                     const createdText = document.getElementById('user-created').textContent || 'baru saja';
@@ -673,19 +675,15 @@
             const favoriteFood = document.getElementById('favorite-food-input').value.trim() || 'Indomie Goreng';
             const description = document.getElementById('profile-description-input').value.trim();
             const shortBio = document.getElementById('short-bio-input').value.trim() || `${fallbackName} suka menikmati ${favoriteFood.toLowerCase()} dan eksplor resep baru.`;
-            const role = document.getElementById('profile-role-input').value || 'Koki Amatir';
             const tagline = `Halo ${fallbackName}, ${favoriteFood} tetap jadi andalan hari ini.`;
             const fallbackDate = document.getElementById('user-created').textContent || 'baru saja';
-            const stars = getRoleStars(role);
 
             const meta = {
                 ...getStoredProfileMeta(),
                 favoriteFood,
                 description: description || `${fallbackName} bergabung di MasakYuk pada ${fallbackDate}. Profil ini akan menampilkan informasi dasar akun secara otomatis saat user login, termasuk nama, email, tanggal bergabung, dan identitas singkat pengguna.`,
                 shortBio,
-                tagline,
-                role,
-                stars
+                tagline
             };
 
             saveStoredProfileMeta(meta);
