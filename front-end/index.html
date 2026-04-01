@@ -52,6 +52,141 @@
         </nav>
     </header>
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            
+            <div class="carousel-item active">
+                <section class="hero-section">
+                    <div class="container content-area">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <h1 class="hero-title">Wind Yean<br>Saurgenien</h1>
+                                <p class="hero-desc">
+                                    Nikmati sensasi kelezatan kuliner sehat yang diracik dari bahan organik pilihan terbaik untuk stamina Anda.
+                                </p>
+                                <a href="#" class="btn-jelu">Dapatkan Sekarang &nbsp; ➔</a>
+                            </div>
+                        </div>
+                    </div>
+                    <img src="../assets/mufuganteng.png" alt="Fresh Food" class="hero-image">
+                </section>
+            </div>
+
+            <div class="carousel-item">
+                <section class="hero-section reverse-layout">
+                    <div class="container content-area">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="hero-copy">
+                                    <h1 class="hero-title">Wind Yean<br>Saurgenien</h1>
+                                    <p class="hero-desc">
+                                        Nikmati sensasi kelezatan kuliner sehat yang diracik dari bahan organik pilihan terbaik untuk stamina anda.
+                                    </p>
+                                    <a href="#" class="btn-jelu" style="justify-content: center;">Dapatkan Sekarang &nbsp; ➔</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <img src="../assets/Untitled design (3).png" alt="Healthy Salad" class="hero-image">
+                </section>
+            </div>
+
+        </div>
+
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true" style="filter: invert(1);"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true" style="filter: invert(1);"></span>
+        </button>
+    </div>
+
+    <section class="chat-section" id="recipe-cs">
+        <div class="chat-overlay" id="chat-overlay" hidden></div>
+        <div class="chat-shell chat-app-frame">
+            <div class="support-layout">
+                <div class="support-content">
+                    <div class="chat-toolbar">
+                        <div class="chat-toolbar-copy">
+                            <strong>Customer service resep</strong>
+                            <p>Chat seperti live support, tapi fokus untuk kebutuhan masak harian.</p>
+                        </div>
+                        <div class="chat-toolbar-actions" aria-hidden="true">
+                            <button type="button" class="chat-close-button" id="chat-close-button" aria-label="Tutup chat">×</button>
+                        </div>
+                    </div>
+
+                    <div class="chat-tabs" role="tablist" aria-label="Mode customer service">
+                        <button type="button" class="chat-tab active" data-tab-target="chat-panel" aria-selected="true">Chat</button>
+                        <button type="button" class="chat-tab" data-tab-target="history-panel" aria-selected="false">Riwayat</button>
+                    </div>
+
+                    <div class="system-notices">
+                        <article class="notice-card notice-warning">
+                            <div class="notice-icon">!</div>
+                            <div>
+                                <strong>Koneksi AI</strong>
+                                <p id="server-notice-text">Pastikan backend Laravel aktif di `http://127.0.0.1:8000` agar chat bisa membalas.</p>
+                            </div>
+                            <button type="button" class="notice-close" data-close-parent aria-label="Tutup notifikasi">×</button>
+                        </article>
+                    </div>
+
+                    <div id="chat-panel" class="chat-panel active" role="tabpanel">
+                        <div id="chat-messages" class="chat-messages" aria-live="polite"></div>
+
+                        <article class="rating-card">
+                            <div class="rating-mark">✦</div>
+                            <div>
+                                <strong>Bantu tingkatkan layanan resep</strong>
+                                <p>Setelah mencoba, kamu bisa nilai kualitas jawaban agar CS makin akurat.</p>
+                            </div>
+                            <div class="rating-emojis" aria-label="Rating cepat">
+                                <button type="button">😕</button>
+                                <button type="button">🙁</button>
+                                <button type="button">🙂</button>
+                                <button type="button">😀</button>
+                                <button type="button">🤩</button>
+                            </div>
+                        </article>
+
+                        <form id="chat-form" class="chat-composer">
+                            <label for="chat-input" class="sr-only">Tulis pertanyaan resep</label>
+                            <div class="composer-shell">
+                                <textarea id="chat-input" rows="2" placeholder="Tulis pertanyaan Anda" required></textarea>
+                                <div class="composer-actions">
+                                    <button type="button" class="composer-icon-button" id="chat-plus" aria-label="Contoh pertanyaan">+</button>
+                                    <button type="submit" id="chat-submit" class="composer-send-button" aria-label="Kirim pertanyaan">
+                                        <span>➜</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <p id="chat-feedback" class="chat-feedback">Backend akan memanggil AI lewat endpoint aman.</p>
+                        </form>
+                    </div>
+
+                    <div id="history-panel" class="chat-panel" role="tabpanel" hidden>
+                        <div class="history-header">
+                            <strong>Riwayat percakapan</strong>
+                            <p>Percakapan terakhir disimpan di browser ini.</p>
+                        </div>
+                        <div id="history-list" class="history-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="floating-chat-cta" id="floating-chat-cta">
+        <button type="button" class="floating-chat-label" id="floating-chat-label">
+            <span>Chat with us</span>
+            <span class="floating-wave">👋</span>
+        </button>
+        <button type="button" class="floating-chat-button" id="floating-chat-button" aria-label="Buka customer service resep">
+            <span class="floating-chat-icon">💬</span>
+        </button>
+    </div>
+
         
        
 
