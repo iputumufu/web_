@@ -6,6 +6,8 @@
     <link rel="stylesheet" href="index.css">
     <title>Masak Yuk - Sistem Pakar Resep</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -20,7 +22,7 @@
             }
         }
     </script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #57754E;
@@ -34,10 +36,12 @@
     </style>
 </head>
 
-<body class="bg-cream dark:bg-gray-900 min-h-screen transition-colors duration-300">
+<body class="bg-cream min-h-screen transition-colors duration-300">
     <header>
         <nav>
-            <img src="/assets/MY_Logo.png" alt="">
+            <a href="#Beranda" class="brand-mark">
+                <img src="../assets/MasakYuk_Logo.png"alt="Masak Yuk">
+            </a>
             <ul>
                 <li><a href="#Beranda">Beranda</a></li>
                 <li><a href="#Hidangan">Hidangan</a></li>
@@ -45,61 +49,230 @@
                 <li><a href="#tentangKami">Tentang Kami</a></li>
                 <li><a href="membuat-resep.html">+ Buat Resep</a></li>
             </ul>
-            <div id="user-menu-container" class="flex items-center gap-2 border-l pl-4 border-gray-200 dark:border-gray-700">
+            <div id="user-menu-container" class="flex items-center gap-2 border-l pl-4 border-gray-200">
                     <a href="login.html" class="hidden sm:block text-gray-600 dark:text-gray-300 hover:text-primary text-sm font-medium">Masuk</a>
                     <a href="register.html" class="bg-primary hover:bg-primary-dark text-white px-5 py-2 rounded-full text-sm font-bold shadow-md transition-all active:scale-95 shadow-primary/20">Daftar</a>
                 </div>
         </nav>
     </header>
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner">
-            
-            <div class="carousel-item active">
-                <section class="hero-section">
-                    <div class="container content-area">
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <h1 class="hero-title">Wind Yean<br>Saurgenien</h1>
-                                <p class="hero-desc">
-                                    Nikmati sensasi kelezatan kuliner sehat yang diracik dari bahan organik pilihan terbaik untuk stamina Anda.
-                                </p>
-                                <a href="#" class="btn-jelu">Dapatkan Sekarang &nbsp; ➔</a>
-                            </div>
-                        </div>
-                    </div>
-                    <img src="../assets/mufuganteng.png" alt="Fresh Food" class="hero-image">
-                </section>
-            </div>
-
-            <div class="carousel-item">
-                <section class="hero-section reverse-layout">
-                    <div class="container content-area">
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <div class="hero-copy">
-                                    <h1 class="hero-title">Wind Yean<br>Saurgenien</h1>
-                                    <p class="hero-desc">
-                                        Nikmati sensasi kelezatan kuliner sehat yang diracik dari bahan organik pilihan terbaik untuk stamina anda.
-                                    </p>
-                                    <a href="#" class="btn-jelu" style="justify-content: center;">Dapatkan Sekarang &nbsp; ➔</a>
+    <main class="landing-shell">
+        <section class="hero-jumbotron" id="Beranda">
+            <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000" data-bs-wrap="true">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <section class="hero-section">
+                            <div class="container content-area">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <h1 class="hero-title">Wind Yean<br>Saurgenien</h1>
+                                        <p class="hero-desc">
+                                            Nikmati sensasi kelezatan kuliner sehat yang diracik dari bahan organik pilihan terbaik untuk stamina Anda.
+                                        </p>
+                                        <a href="#" class="btn-jelu">Dapatkan Sekarang &nbsp; ➔</a>
+                                    </div>
                                 </div>
                             </div>
+                            <img src="../assets/mufuganteng.png" alt="Fresh Food" class="hero-image">
+                        </section>
+                    </div>
+
+                    <div class="carousel-item">
+                        <section class="hero-section reverse-layout">
+                            <div class="container content-area">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="hero-copy">
+                                            <h1 class="hero-title">Wind Yean<br>Saurgenien</h1>
+                                            <p class="hero-desc">
+                                                Nikmati sensasi kelezatan kuliner sehat yang diracik dari bahan organik pilihan terbaik untuk stamina anda.
+                                            </p>
+                                            <a href="#" class="btn-jelu">Dapatkan Sekarang &nbsp; ➔</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <img src="../assets/Untitled design (3).png" alt="Healthy Salad" class="hero-image">
+                        </section>
+                    </div>
+                </div>
+
+                <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true" style="filter: invert(1);"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true" style="filter: invert(1);"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </section>
+
+        <section class="classic-showcase" id="Hidangan">
+            <div class="classic-showcase-shell">
+                <div class="classic-showcase-header">
+                    <div>
+                        <p class="classic-kicker">Favorit Pengguna</p>
+                        <h2>Resep Favorit</h2>
+                    </div>
+                    <div class="classic-showcase-nav" aria-hidden="true">
+                        <span class="classic-arrow">←</span>
+                        <span class="classic-arrow active">→</span>
+                    </div>
+                </div>
+
+                <div class="classic-dish-grid" id="favorite-menu-grid"></div>
+
+                <div class="classic-service-feature" id="tentangKami">
+                    <div class="classic-service-visual">
+                        <div class="classic-service-photo-ring">
+                            <img src="../assets/Registerbg.jpg" alt="Chef Masak Yuk">
                         </div>
                     </div>
-                    <img src="../assets/Untitled design (3).png" alt="Healthy Salad" class="hero-image">
+                    <div class="classic-service-copy">
+                        <p class="classic-kicker">Layanan Kami</p>
+                        <h2>We Are More Than Multiple Survice</h2>
+                        <p>
+                            Masak Yuk membantu kamu menemukan inspirasi resep, mengatur menu favorit, dan menikmati pengalaman memasak
+                            dengan tampilan yang lebih rapi, ringan, dan mudah dipahami setiap hari.
+                        </p>
+                        <div class="classic-service-points">
+                            <span>Online Order</span>
+                            <span>Pre-Reservation</span>
+                            <span>24/7 Service</span>
+                            <span>Organized Foodie Place</span>
+                            <span>Clean Kitchen</span>
+                            <span>Super Chefs</span>
+                        </div>
+                        <a href="test.html" class="classic-service-button">About Us</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="popular-showcase">
+            <div class="expert-menu-shell">
+                <div class="expert-menu-header">
+                    <p class="expert-menu-kicker">Sistem Pakar Resep</p>
+                    <h2>Temukan Resep Yang Paling Cocok</h2>
+                    <p class="expert-menu-subtitle">
+                        Pilih bahan yang tersedia, negara, jenis makanan, rasa, dan tingkat kesulitan. Setelah lengkap, sistem akan menampilkan rekomendasi resep yang paling sesuai.
+                    </p>
+                </div>
+
+                <div class="expert-selector-layout">
+                    <section class="expert-select-panel expert-select-panel-ingredients">
+                        <div class="expert-panel-head">
+                            <div>
+                                <h3>Pilih Bahan Bahan :</h3>
+                                <p>Pilih satu atau beberapa bahan utama yang Anda punya di rumah.</p>
+                            </div>
+                            <button type="button" class="expert-reset-button" id="expert-reset-button">Reset</button>
+                        </div>
+                        <div class="expert-selected-list" id="expert-selected-list"></div>
+                        <div class="expert-ingredient-groups" id="expert-ingredient-groups"></div>
+                    </section>
+
+                    <section class="expert-select-panel expert-select-panel-filters">
+                        <div class="expert-filter-block">
+                            <h3>Pilih Negara :</h3>
+                            <div class="expert-choice-grid expert-country-tabs" id="expert-country-tabs"></div>
+                        </div>
+
+                        <div class="expert-filter-block">
+                            <h3>Pilih Jenis Makanan :</h3>
+                            <div class="expert-choice-grid expert-type-tabs" id="expert-type-tabs"></div>
+                        </div>
+
+                        <div class="expert-filter-block">
+                            <h3>Pilih Preferensi Rasa :</h3>
+                            <div class="expert-choice-grid expert-taste-tabs" id="expert-taste-tabs"></div>
+                        </div>
+
+                        <div class="expert-filter-block">
+                            <h3>Pilih Tingkat Kesulitan :</h3>
+                            <div class="expert-choice-grid expert-difficulty-tabs" id="expert-difficulty-tabs"></div>
+                        </div>
+
+                        <div class="expert-progress-note" id="expert-progress-note">
+                            Pilih semua opsi di atas untuk melihat hasil rekomendasi resep.
+                        </div>
+                    </section>
+                </div>
+
+                <section class="expert-results-section" id="expert-results-section" hidden>
+                    <div class="expert-results-head">
+                        <div>
+                            <p class="expert-menu-kicker">Hasil Sistem Pakar</p>
+                            <h3>Resep Paling Sesuai Untuk Anda</h3>
+                        </div>
+                        <p id="expert-results-caption">Sistem sedang menyiapkan rekomendasi resep terbaik.</p>
+                    </div>
+
+                    <div class="expert-menu-grid" id="expert-menu-grid"></div>
+
+                    <div class="expert-empty-state" id="expert-empty-state" hidden>
+                        <strong>Belum ada resep yang cocok</strong>
+                        <p>Coba ganti bahan atau preferensi lain agar sistem bisa menemukan menu yang lebih sesuai.</p>
+                    </div>
                 </section>
             </div>
+        </section>
 
-        </div>
+        <section class="all-menu-showcase" id="all-menu-showcase">
+            <div class="all-menu-shell">
+                <div class="all-menu-header">
+                    <p class="expert-menu-kicker">Katalog Resep</p>
+                    <h2>Our Regular Menu Pack</h2>
+                    <p class="all-menu-subtitle">Jelajahi semua menu dari berbagai negara. Gunakan pencarian atau filter negara untuk menemukan resep yang Anda inginkan.</p>
+                </div>
 
-        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true" style="filter: invert(1);"></span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true" style="filter: invert(1);"></span>
-        </button>
-    </div>
+                <div class="all-menu-toolbar">
+                    <form class="all-menu-search" id="all-menu-search-form">
+                        <input type="search" id="all-menu-search-input" placeholder="Cari nama menu atau bahan..." aria-label="Cari resep">
+                        <button type="submit">Search</button>
+                    </form>
+                    <div class="all-menu-tabs" id="all-menu-tabs"></div>
+                </div>
+
+                <div class="all-menu-grid" id="all-menu-grid"></div>
+
+                <div class="all-menu-footer">
+                    <p id="all-menu-caption">Menampilkan resep pilihan dari semua negara.</p>
+                    <button type="button" class="all-menu-more-button" id="all-menu-more-button">Menu Berikutnya</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="expert-recipe-modal" id="expert-recipe-modal" hidden aria-hidden="true">
+            <div class="expert-recipe-backdrop" id="expert-recipe-backdrop"></div>
+            <div class="expert-recipe-dialog" role="dialog" aria-modal="true" aria-labelledby="expert-modal-title">
+                <button type="button" class="expert-modal-close" id="expert-modal-close" aria-label="Tutup detail resep">×</button>
+                <div class="expert-modal-media">
+                    <div class="expert-modal-badges">
+                        <span class="expert-modal-country" id="expert-modal-country"></span>
+                        <span class="expert-modal-level" id="expert-modal-level"></span>
+                    </div>
+                    <img id="expert-modal-image" src="" alt="">
+                </div>
+                <div class="expert-modal-body">
+                    <p class="expert-modal-type" id="expert-modal-type"></p>
+                    <h3 id="expert-modal-title"></h3>
+                    <p class="expert-modal-summary" id="expert-modal-summary"></p>
+                    <div class="expert-modal-score">
+                        <span class="expert-modal-score-main" id="expert-modal-score"></span>
+                        <span class="expert-modal-score-side" id="expert-modal-missing"></span>
+                    </div>
+                    <div class="expert-modal-ingredients">
+                        <h4>Bahan Utama</h4>
+                        <div class="expert-modal-ingredient-list" id="expert-modal-ingredients"></div>
+                    </div>
+                    <div class="expert-modal-steps">
+                        <h4>Langkah Membuat</h4>
+                        <ol id="expert-modal-steps"></ol>
+                    </div>
+                </div>
+            </div>
+        </section>
 
     <section class="chat-section" id="recipe-cs">
         <div class="chat-overlay" id="chat-overlay" hidden></div>
@@ -177,126 +350,6 @@
         </div>
     </section>
 
-    <div class="floating-chat-cta" id="floating-chat-cta">
-        <button type="button" class="floating-chat-label" id="floating-chat-label">
-            <span>Chat with us</span>
-            <span class="floating-wave">👋</span>
-        </button>
-        <button type="button" class="floating-chat-button" id="floating-chat-button" aria-label="Buka customer service resep">
-            <span class="floating-chat-icon">💬</span>
-        </button>
-    </div>
-
-        
-       
-
-        <section class="chat-section" id="recipe-cs">
-            <div class="chat-overlay" id="chat-overlay" hidden></div>
-            <div class="chat-shell chat-app-frame">
-                <div class="support-layout">
-                    <aside class="support-sidebar">
-                        <div class="support-brand">
-                            <span class="support-brand-badge">MY</span>
-                            <div>
-                                <strong>Masak Yuk</strong>
-                                <p>Recipe support</p>
-                            </div>
-                        </div>
-                        <div class="support-sidebar-group">
-                            <p class="support-sidebar-label">Navigasi</p>
-                            <div class="chat-tabs sidebar-tabs" role="tablist" aria-label="Mode customer service">
-                                <button type="button" class="chat-tab active" data-tab-target="chat-panel" aria-selected="true"><span class="tab-icon">💬</span><span>Chat</span></button>
-                                <button type="button" class="chat-tab" data-tab-target="history-panel" aria-selected="false"><span class="tab-icon">🕘</span><span>Riwayat</span></button>
-                            </div>
-                        </div>
-                        <div class="support-sidebar-card">
-                            <p class="support-sidebar-label">Status</p>
-                            <strong>Asisten aktif</strong>
-                            <p>Siap bantu resep, bahan pengganti, dan ide menu cepat.</p>
-                        </div>
-                    </aside>
-
-                    <div class="support-content">
-                        <div class="chat-toolbar">
-                            <div class="chat-toolbar-copy">
-                                <strong>Customer service resep</strong>
-                                <p>Chat seperti live support, tapi fokus untuk kebutuhan masak harian.</p>
-                            </div>
-                            <div class="chat-toolbar-actions" aria-hidden="true">
-                                <span class="toolbar-icon">✦</span>
-                                <span class="toolbar-icon">📝</span>
-                                <span class="toolbar-icon">↗</span>
-                                <button type="button" class="chat-close-button" id="chat-close-button" aria-label="Tutup chat">×</button>
-                            </div>
-                        </div>
-
-                        <div class="system-notices">
-                            <article class="notice-card notice-warning">
-                                <div class="notice-icon">!</div>
-                                <div>
-                                    <strong>Koneksi AI</strong>
-                                    <p id="server-notice-text">Pastikan backend Laravel aktif di `http://127.0.0.1:8000` agar chat bisa membalas.</p>
-                                </div>
-                                <button type="button" class="notice-close" data-close-parent aria-label="Tutup notifikasi">×</button>
-                            </article>
-                            <article class="notice-card notice-neutral">
-                                <div class="notice-icon">i</div>
-                                <div>
-                                    <strong>Panduan penggunaan</strong>
-                                    <p>Sebutkan bahan, porsi, atau gaya masakan yang kamu mau. Contoh: "ayam + kentang buat 3 orang".</p>
-                                </div>
-                                <button type="button" class="notice-close" data-close-parent aria-label="Tutup notifikasi">×</button>
-                            </article>
-                        </div>
-
-                        <div id="chat-panel" class="chat-panel active" role="tabpanel">
-                            <div id="chat-messages" class="chat-messages" aria-live="polite"></div>
-                            
-                            <article class="rating-card">
-                                <div class="rating-mark">✦</div>
-                                <div>
-                                    <strong>Bantu tingkatkan layanan resep</strong>
-                                    <p>Setelah mencoba, kamu bisa nilai kualitas jawaban agar CS makin akurat.</p>
-                                </div>
-                                <div class="rating-emojis" aria-label="Rating cepat">
-                                    <button type="button">😕</button>
-                                    <button type="button">🙁</button>
-                                    <button type="button">🙂</button>
-                                    <button type="button">😀</button>
-                                    <button type="button">🤩</button>
-                                </div>
-                            </article>
-                            <form id="chat-form" class="chat-form chat-composer">
-                                <label for="chat-input" class="sr-only">Tulis pertanyaan resep</label>
-                                <div class="composer-shell">
-                                    <textarea id="chat-input" rows="2" placeholder="Tulis pertanyaan Anda" required></textarea>
-                                    <div class="composer-actions">
-                                        <button type="button" class="composer-icon-button" id="chat-plus" aria-label="Contoh pertanyaan">+</button>
-                                        <button type="submit" id="chat-submit" class="composer-send-button" aria-label="Kirim pertanyaan">
-                                            <span>➜</span>
-                                        </button>
-                                    </div>
-                                </div>
-                                <p id="chat-feedback" class="chat-feedback">Backend akan memanggil AI lewat endpoint aman.</p>
-                            </form>
-                        </div>
-
-                        <div id="history-panel" class="chat-panel history-panel" role="tabpanel" hidden>
-                            <div class="history-header">
-                                <strong>Riwayat percakapan</strong>
-                                <p>Percakapan terakhir disimpan di browser ini.</p>
-                            </div>
-                            <div id="history-list" class="history-list"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-
-        <!--  ngoding di bawah sini vedo dan abhi  -->
-
-
     </main>
     
 
@@ -310,55 +363,40 @@
         </button>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="auth.js"></script>
+    <script src="index.js"></script>
     <script src="recipe-assistant.js"></script>
 
     <script>
-
-        
         document.addEventListener('DOMContentLoaded', function() {
-            // Update navbar auth state first
             updateNavbar();
-            
-            // Init theme toggle (professional implementation)
-            const html = document.documentElement;
-            const toggleBtn = document.querySelector('.theme-toggle');
-            
-            function initTheme() {
-                const savedTheme = localStorage.getItem('color-theme');
-                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                
-                if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-                    html.classList.add('dark');
+            if (typeof initRecipeExpert === 'function') {
+                initRecipeExpert();
+            }
+            if (typeof initAllMenuCatalog === 'function') {
+                initAllMenuCatalog();
+            }
+
+            const userMenuContainer = document.getElementById('user-menu-container');
+
+            document.addEventListener('click', function(event) {
+                if (!userMenuContainer) return;
+                const profileWrapper = userMenuContainer.querySelector('.group');
+                if (!profileWrapper) return;
+
+                const toggleButton = profileWrapper.querySelector('button');
+                const clickedInsideMenu = profileWrapper.contains(event.target);
+
+                if (toggleButton && (toggleButton === event.target || toggleButton.contains(event.target))) {
+                    profileWrapper.classList.toggle('user-menu-open');
+                    return;
                 }
-            }
-            
-            function toggleDarkMode() {
-                html.classList.toggle('dark');
-                const isDark = html.classList.contains('dark');
-                localStorage.setItem('color-theme', isDark ? 'dark' : 'light');
-            }
-            
-            // Add theme toggle button to navbar if not exists
-            if (!toggleBtn && window.innerWidth >= 1024) {
-                const userContainer = document.getElementById('user-menu-container');
-                if (userContainer) {
-                    userContainer.insertAdjacentHTML('beforebegin', 
-                        '<button class="theme-toggle p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" title="Toggle dark mode">' +
-                        '<svg id="theme-sun" class="w-5 h-5 hidden dark:inline text-yellow-500" fill="currentColor" viewBox="0 0 20 20">' +
-                        '<path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>' +
-                        '</svg>' +
-                        '<svg id="theme-moon" class="w-5 h-5 inline dark:hidden text-gray-700 dark:text-gray-300" fill="currentColor" viewBox="0 0 20 20">' +
-                        '<path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>' +
-                        '</svg>' +
-                        '</button>');
-                    
-                    const newToggle = document.querySelector('.theme-toggle');
-                    newToggle.addEventListener('click', toggleDarkMode);
+
+                if (!clickedInsideMenu) {
+                    profileWrapper.classList.remove('user-menu-open');
                 }
-            }
-            
-            initTheme();
+            });
         });
     </script>
 </body>

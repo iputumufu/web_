@@ -59,15 +59,66 @@
         .count-badge {
             font-variant-numeric: tabular-nums;
         }
-        .public-preview-card {
-            background: linear-gradient(180deg, #f6f9ff 0%, #ffffff 52%);
-            box-shadow: 0 24px 64px rgba(103, 78, 40, 0.14);
+        .catalog-preview-card {
+            overflow: hidden;
+            border-radius: 1.75rem;
+            background: #fff;
+            box-shadow: 0 18px 38px rgba(123, 100, 36, 0.12);
         }
-        .public-preview-fade {
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.26) 36%, rgba(26, 31, 39, 0.5) 100%);
+        .catalog-preview-image {
+            position: relative;
+            min-height: 220px;
+            background: linear-gradient(180deg, rgba(255, 249, 235, 0.86), rgba(247, 240, 226, 0.48));
         }
-        .public-preview-summary {
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        .catalog-preview-image img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+        }
+        .catalog-preview-country,
+        .catalog-preview-badge {
+            position: absolute;
+            top: 1rem;
+            padding: 0.45rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.74rem;
+            font-weight: 800;
+        }
+        .catalog-preview-country {
+            left: 1rem;
+            background: rgba(255, 249, 235, 0.96);
+            color: #7b6424;
+        }
+        .catalog-preview-badge {
+            right: 1rem;
+            background: rgba(95, 127, 85, 0.92);
+            color: #fff;
+        }
+        .catalog-preview-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            padding: 1.25rem 1.15rem 1.2rem;
+        }
+        .catalog-preview-stars {
+            display: flex;
+            justify-content: center;
+            gap: 0.18rem;
+            color: #f4c552;
+        }
+        .catalog-preview-copy {
+            min-height: 72px;
+            color: #6b7280;
+            line-height: 1.7;
+        }
+        .catalog-preview-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            margin-top: auto;
         }
     </style>
 </head>
@@ -89,20 +140,20 @@
     <main class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <section class="mb-8 grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
             <div class="soft-card rounded-[2rem] p-8">
-                <span class="mb-4 inline-flex rounded-full bg-primary/10 px-4 py-2 text-sm font-bold text-primary">Publish resep komunitas</span>
+                <span class="mb-4 inline-flex rounded-full bg-primary/10 px-4 py-2 text-sm font-bold text-primary">Publish resep ke katalog utama</span>
                 <h1 class="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">Buat resep khas Anda dengan tampilan yang rapi dan siap dilihat semua orang.</h1>
-                <p class="mt-4 max-w-2xl text-base leading-8 text-slate-600">Isi judul, bahan, langkah, kategori, foto, lalu publish. Setelah dikirim, resep akan muncul di halaman publik dan langsung masuk ke menu <strong>Resep Saya</strong> di navbar akun.</p>
+                <p class="mt-4 max-w-2xl text-base leading-8 text-slate-600">Isi judul, bahan, langkah, kategori, foto, lalu publish. Setelah dikirim, resep akan muncul di section <strong>Our Regular Menu Pack</strong> di halaman utama dan tetap masuk ke menu <strong>Resep Saya</strong> di navbar akun.</p>
                 <div class="mt-6 flex flex-wrap gap-3">
                     <span class="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm ring-1 ring-primary/10">Live preview</span>
-                    <span class="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm ring-1 ring-primary/10">Resep publik</span>
+                    <span class="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm ring-1 ring-primary/10">Katalog utama</span>
                     <span class="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm ring-1 ring-primary/10">Dropdown akun</span>
                 </div>
             </div>
             <div id="publish-status" class="soft-card rounded-[2rem] p-8">
                 <p class="text-sm font-bold uppercase tracking-[0.22em] text-primary/80">Status publish</p>
                 <h2 class="mt-4 text-2xl font-extrabold text-slate-900">Siap upload resep pertama</h2>
-                <p class="mt-3 text-base leading-8 text-slate-600">Preview kartu hasil publish akan muncul di bawah setelah resep berhasil disimpan.</p>
-                <a href="test.html" class="mt-6 inline-flex rounded-full bg-primary px-5 py-3 text-sm font-bold text-white transition hover:bg-primary-dark">Lihat resep publik</a>
+                <p class="mt-3 text-base leading-8 text-slate-600">Preview kartu hasil publish akan muncul di bawah setelah resep berhasil disimpan dan siap masuk ke katalog menu utama.</p>
+                <a href="index.html#all-menu-showcase" class="mt-6 inline-flex rounded-full bg-primary px-5 py-3 text-sm font-bold text-white transition hover:bg-primary-dark">Lihat katalog utama</a>
             </div>
         </section>
 
@@ -215,9 +266,9 @@
                 <div>
                     <p class="text-sm font-bold uppercase tracking-[0.22em] text-primary/80">Hasil publish</p>
                     <h2 class="mt-2 text-3xl font-extrabold text-slate-900">Resep baru berhasil dibuat</h2>
-                    <p class="mt-2 text-sm font-semibold text-slate-500">Preview ini sudah mengikuti gaya kartu resep publik yang baru.</p>
+                    <p class="mt-2 text-sm font-semibold text-slate-500">Preview ini sudah mengikuti gaya kartu di section Our Regular Menu Pack.</p>
                 </div>
-                <a href="test.html" class="rounded-full bg-primary px-5 py-3 text-sm font-bold text-white transition hover:bg-primary-dark">Buka halaman publik</a>
+                <a href="index.html#all-menu-showcase" class="rounded-full bg-primary px-5 py-3 text-sm font-bold text-white transition hover:bg-primary-dark">Buka katalog utama</a>
             </div>
             <div id="recipe-preview-card"></div>
         </section>
@@ -307,33 +358,25 @@
         }
 
         function renderPreviewCard(recipe) {
-            const missingCount = Math.max(recipe.ingredients.length - 1, 0);
             const preview = document.getElementById('recipe-preview-card');
+            const stars = Array.from({ length: 5 }, (_, index) => {
+                const total = recipe.difficulty === 'Mudah' ? 3 : recipe.difficulty === 'Sedang' ? 4 : 5;
+                return `<span>${index < total ? '★' : '☆'}</span>`;
+            }).join('');
             preview.innerHTML = `
-                <article class="public-preview-card overflow-hidden rounded-[2.35rem]">
-                    <div class="relative h-[320px] overflow-hidden bg-slate-100">
-                        <img src="${recipe.image || '../assets/image.png'}" alt="${escapeHtml(recipe.title)}" class="h-full w-full object-cover">
-                        <div class="public-preview-fade absolute inset-0"></div>
-                        <div class="absolute left-6 top-6 right-6 flex items-start justify-between gap-3">
-                            <span class="rounded-full bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-sm">${recipe.country}</span>
-                            <span class="rounded-full bg-[#ff4d43] px-4 py-2 text-sm font-bold text-white shadow-sm">${recipe.difficulty}</span>
-                        </div>
+                <article class="catalog-preview-card">
+                    <div class="catalog-preview-image">
+                        <span class="catalog-preview-country">${escapeHtml(recipe.country)}</span>
+                        <span class="catalog-preview-badge">Resep Baru</span>
+                        <img src="${recipe.image || '../assets/image.png'}" alt="${escapeHtml(recipe.title)}">
                     </div>
-                    <div class="-mt-8 rounded-t-[2.15rem] bg-white px-8 py-7 relative">
-                        <p class="text-sm font-extrabold uppercase tracking-[0.22em] text-[#23c85a]">${recipe.category}</p>
-                        <h3 class="mt-3 text-4xl font-extrabold text-slate-900">${escapeHtml(recipe.title)}</h3>
-                        <div class="mt-6 border-t border-slate-100 pt-5">
-                            <div class="public-preview-summary rounded-[1.65rem] bg-[#fff8e7] px-5 py-4">
-                                <div class="flex flex-wrap items-center justify-between gap-3">
-                                    <span class="text-lg font-extrabold text-[#f28c00]">COCOK 25%</span>
-                                    <span class="rounded-full bg-white px-4 py-2 text-sm font-bold text-[#f4a032]">${missingCount ? `Kurang ${missingCount} Bahan` : 'Semua bahan siap'}</span>
-                                </div>
-                                <p class="mt-3 text-sm font-semibold text-slate-500">Butuh: ${recipe.ingredients.slice(0, 3).join(', ')}${recipe.ingredients.length > 3 ? '...' : ''}</p>
-                            </div>
-                            <div class="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm font-semibold text-slate-500">
-                                <span>Klik kartu ini nanti akan membuka modal detail langkah di halaman publik.</span>
-                                <a href="test.html?recipe=${encodeURIComponent(recipe.id)}" class="rounded-full bg-primary px-4 py-2 text-xs font-extrabold text-white transition hover:bg-primary-dark">Lihat modal publik</a>
-                            </div>
+                    <div class="catalog-preview-content">
+                        <h3 class="text-[1.7rem] font-extrabold text-slate-800">${escapeHtml(recipe.title)}</h3>
+                        <div class="catalog-preview-stars" aria-hidden="true">${stars}</div>
+                        <p class="catalog-preview-copy text-sm font-semibold">${escapeHtml(recipe.description)}</p>
+                        <div class="catalog-preview-meta text-sm font-bold">
+                            <span class="text-slate-800">${escapeHtml(recipe.category)}</span>
+                            <a href="index.html#all-menu-showcase" class="rounded-full bg-[#fff8e7] px-4 py-2 text-[#7b6424] ring-1 ring-[#f4c552]/50 transition hover:bg-[#f4c552] hover:text-[#5b4510]">Lihat di Katalog</a>
                         </div>
                     </div>
                 </article>
@@ -466,16 +509,16 @@
             document.getElementById('publish-status').innerHTML = `
                 <p class="text-sm font-bold uppercase tracking-[0.22em] text-primary/80">Status publish</p>
                 <h2 class="mt-4 text-2xl font-extrabold text-slate-900">Resep berhasil dipublish</h2>
-                <p class="mt-3 text-base leading-8 text-slate-600">${escapeHtml(recipe.title)} sudah masuk ke halaman publik dan dropdown Resep Saya.</p>
+                <p class="mt-3 text-base leading-8 text-slate-600">${escapeHtml(recipe.title)} sudah masuk ke section Our Regular Menu Pack dan dropdown Resep Saya.</p>
                 <div class="mt-5 flex flex-wrap gap-3">
-                    <a href="test.html?recipe=${encodeURIComponent(recipe.id)}" class="inline-flex rounded-full bg-primary px-5 py-3 text-sm font-bold text-white transition hover:bg-primary-dark">Lihat resep</a>
-                    <a href="test.html" class="inline-flex rounded-full bg-white px-5 py-3 text-sm font-bold text-primary ring-1 ring-primary/15 transition hover:bg-primary/5">Buka semua resep</a>
+                    <a href="index.html#all-menu-showcase" class="inline-flex rounded-full bg-primary px-5 py-3 text-sm font-bold text-white transition hover:bg-primary-dark">Lihat di katalog utama</a>
+                    <a href="index.html" class="inline-flex rounded-full bg-white px-5 py-3 text-sm font-bold text-primary ring-1 ring-primary/15 transition hover:bg-primary/5">Buka halaman utama</a>
                 </div>
             `;
 
             renderPreviewCard(recipe);
             updateNavbar();
-            showAlert('Resep berhasil dipublish dan sekarang bisa dilihat di halaman publik.', 'success');
+            showAlert('Resep berhasil dipublish dan sekarang bisa dilihat di section Our Regular Menu Pack.', 'success');
             window.scrollTo({ top: document.getElementById('preview-section').offsetTop - 80, behavior: 'smooth' });
         });
 

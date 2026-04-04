@@ -406,10 +406,10 @@
                 
                 if (data.success) {
                     showAlert('success', 'Pendaftaran berhasil! Mengalihkan ke halaman login...');
+                    sessionStorage.setItem('pendingLoginEmail', email);
                     setTimeout(() => {
                         const params = new URLSearchParams({
-                            registered: '1',
-                            email,
+                            registered: '1'
                         });
                         window.location.href = `login.html?${params.toString()}`;
                     }, 1200);

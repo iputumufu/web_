@@ -3,6 +3,7 @@
 const API_URL = 'http://localhost:8000/api';
 const OAUTH_BASE_URL = 'http://localhost:8000';
 const PUBLIC_RECIPES_STORAGE_KEY = 'masakyuk_public_recipes';
+const FAVORITE_RECIPES_STORAGE_KEY = 'masakyuk_recipe_favorites';
 
 function getFrontendBaseUrl() {
     const currentPath = window.location.pathname;
@@ -83,6 +84,82 @@ function saveRecipe(recipeInput) {
     return recipe;
 }
 
+function slugifyRecipeValue(value) {
+    return String(value || '')
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+}
+
+function getRecipeFavoriteKey(recipe) {
+    if (!recipe) return '';
+    if (recipe.favoriteKey) return recipe.favoriteKey;
+    if (recipe.id) return `community:${recipe.id}`;
+
+    const nama = recipe.nama || recipe.title || 'menu';
+    const negara = recipe.negara || recipe.country || 'indonesia';
+    const tipe = recipe.tipe || recipe.category || 'utama';
+    return `menu:${slugifyRecipeValue(`${nama}-${negara}-${tipe}`)}`;
+}
+
+function getFavoriteRecipesRegistry() {
+    try {
+        return JSON.parse(localStorage.getItem(FAVORITE_RECIPES_STORAGE_KEY) || '{}');
+    } catch (error) {
+        return {};
+    }
+}
+
+function saveFavoriteRecipesRegistry(registry) {
+    localStorage.setItem(FAVORITE_RECIPES_STORAGE_KEY, JSON.stringify(registry));
+}
+
+function getRecipeFavoriteCount(recipe) {
+    const key = getRecipeFavoriteKey(recipe);
+    if (!key) return 0;
+
+    const registry = getFavoriteRecipesRegistry();
+    return Array.isArray(registry[key]) ? registry[key].length : 0;
+}
+
+function isRecipeFavorited(recipe, user = getCurrentUser()) {
+    if (!user) return false;
+
+    const key = getRecipeFavoriteKey(recipe);
+    if (!key) return false;
+
+    const registry = getFavoriteRecipesRegistry();
+    return Array.isArray(registry[key]) && registry[key].includes(user.id);
+}
+
+function toggleRecipeFavorite(recipe, user = getCurrentUser()) {
+    if (!user) {
+        return { success: false, message: 'Silakan login dulu untuk menambahkan favorit.' };
+    }
+
+    const key = getRecipeFavoriteKey(recipe);
+    if (!key) {
+        return { success: false, message: 'Resep tidak valid untuk difavoritkan.' };
+    }
+
+    const registry = getFavoriteRecipesRegistry();
+    const currentUsers = Array.isArray(registry[key]) ? registry[key] : [];
+    const hasFavorited = currentUsers.includes(user.id);
+    const nextUsers = hasFavorited
+        ? currentUsers.filter((id) => id !== user.id)
+        : [...currentUsers, user.id];
+
+    registry[key] = nextUsers;
+    saveFavoriteRecipesRegistry(registry);
+
+    return {
+        success: true,
+        favorited: !hasFavorited,
+        count: nextUsers.length
+    };
+}
+
 function getRecipeById(recipeId) {
     return getPublicRecipes().find((recipe) => recipe.id === recipeId) || null;
 }
@@ -158,7 +235,7 @@ function updateUserMenu() {
         const recipeLinks = userRecipes.length
             ? userRecipes.map((recipe) => `
                     <a href="test.html?recipe=${encodeURIComponent(recipe.id)}" class="flex items-start gap-3 px-5 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-cream hover:dark:bg-gray-700/50 transition-all rounded-xl mx-1 my-1">
-                        <span class="mt-1 inline-flex h-2.5 w-2.5 rounded-full bg-primary flex-shrink-0"></span>
+                        <span class="mt-1 inline-flex h-2.5 w-2.5 rounded-full flex-shrink-0" style="background-color: var(--primary, #57754E);"></span>
                         <span class="min-w-0">
                             <span class="block font-semibold truncate">${escapeHtml(recipe.title)}</span>
                             <span class="block text-xs text-gray-500 dark:text-gray-400">${escapeHtml(recipe.category)} • ${escapeHtml(recipe.difficulty)}</span>
@@ -174,14 +251,14 @@ function updateUserMenu() {
         container.innerHTML = `
             <div class="relative group">
                 <button class="flex items-center gap-3 p-1.5 rounded-xl hover:bg-cream/50 dark:hover:bg-primary-dark/10 transition-colors border border-primary/20 hover:border-primary/40">
-                    <div class="w-9 h-9 bg-primary rounded-full flex items-center justify-center text-cream font-semibold text-sm shadow-md shadow-primary/20">
+                    <div class="w-9 h-9 rounded-full flex items-center justify-center font-semibold text-sm shadow-md" style="background-color: var(--primary, #57754E); color: #fff; box-shadow: 0 8px 20px rgba(87, 117, 78, 0.22);">
                         ${userInitial}
                     </div>
                     <div class="hidden md:block">
                         <span class="block text-sm font-bold text-gray-800 dark:text-gray-200">${user.name}</span>
                         <span class="block text-xs text-gray-500 dark:text-gray-400">${roleLabel}</span>
                     </div>
-                    <svg class="w-4 h-4 text-primary dark:text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4" style="color: var(--primary, #57754E);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
                 </button>
@@ -194,16 +271,16 @@ function updateUserMenu() {
                             ${verifiedBadge}
                         </div>
                         <p class="text-sm text-gray-500 dark:text-gray-400 truncate">${user.email}</p>
-                        <p class="text-xs font-semibold uppercase tracking-wide text-primary mt-2">${roleLabel}</p>
+                        <p class="text-xs font-semibold uppercase tracking-wide mt-2" style="color: var(--primary, #57754E);">${roleLabel}</p>
                     </div>
                     <a href="profile.html" class="flex items-center gap-4 px-5 py-3 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-cream hover:dark:bg-gray-700/50 hover:shadow-sm transition-all rounded-xl mx-1 my-1">
-                        <svg class="w-5 h-5 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 flex-shrink-0" style="color: var(--primary, #57754E);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                         </svg>
                         Profil Saya
                     </a>
                     <a href="membuat-resep.html" class="flex items-center gap-4 px-5 py-3 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-cream hover:dark:bg-gray-700/50 hover:shadow-sm transition-all rounded-xl mx-1 my-1">
-                        <svg class="w-5 h-5 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 flex-shrink-0" style="color: var(--primary, #57754E);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                         </svg>
                         Buat Resep
@@ -211,12 +288,12 @@ function updateUserMenu() {
                     <div class="mx-3 my-2 rounded-2xl border border-primary/10 bg-cream/50 dark:bg-gray-700/30 dark:border-gray-700 overflow-hidden">
                         <div class="px-4 py-3 border-b border-primary/10 dark:border-gray-700 flex items-center justify-between gap-3">
                             <p class="text-sm font-bold text-gray-800 dark:text-white">Resep Saya</p>
-                            <a href="test.html" class="text-xs font-semibold text-primary hover:text-primary-dark">Lihat semua</a>
+                            <a href="test.html" class="text-xs font-semibold" style="color: var(--primary, #57754E);">Lihat semua</a>
                         </div>
                         ${recipeLinks}
                     </div>
-                    <button onclick="logout()" class="w-full flex items-center gap-4 px-5 py-3 text-sm font-semibold text-primary-dark hover:bg-cream/70 dark:hover:bg-gray-700/50 hover:shadow-sm transition-all rounded-xl mx-1 my-1 group">
-                        <svg class="w-5 h-5 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button onclick="logout()" class="w-full flex items-center gap-4 px-5 py-3 text-sm font-semibold hover:bg-cream/70 dark:hover:bg-gray-700/50 hover:shadow-sm transition-all rounded-xl mx-1 my-1 group" style="color: #435a3c;">
+                        <svg class="w-5 h-5 flex-shrink-0" style="color: var(--primary, #57754E);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                         </svg>
                         Keluar

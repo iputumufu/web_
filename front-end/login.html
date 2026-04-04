@@ -202,12 +202,21 @@
         }
 
         const registered = urlParams.get('registered');
-        const email = urlParams.get('email');
-        if (email) {
-            document.getElementById('email').value = decodeURIComponent(email);
+        const emailFromQuery = urlParams.get('email');
+        const emailFromRegister = sessionStorage.getItem('pendingLoginEmail');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+
+        if (emailInput) {
+            emailInput.value = emailFromRegister || (emailFromQuery ? decodeURIComponent(emailFromQuery) : '');
+        }
+
+        if (passwordInput) {
+            passwordInput.value = '';
         }
 
         if (registered === '1') {
+            sessionStorage.removeItem('pendingLoginEmail');
             showAlert('success', 'Akun berhasil dibuat. Silakan login.');
         }
         

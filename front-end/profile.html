@@ -28,8 +28,6 @@
                 radial-gradient(circle at top left, rgba(91, 122, 82, 0.08), transparent 26%),
                 linear-gradient(180deg, #fffaf5 0%, #fbf6ef 100%);
         }
-        .toggle-dot { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        input:checked ~ .toggle-dot { transform: translateX(1.25rem); }
         .input-focus:focus {
             box-shadow: 0 0 0 3px rgba(91, 122, 82, 0.14);
         }
@@ -61,6 +59,35 @@
         .avatar-edit-button {
             box-shadow: 0 12px 24px rgba(36, 49, 38, 0.22);
         }
+        .favorite-card {
+            overflow: hidden;
+            border-radius: 1.6rem;
+            background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(249,250,247,0.94));
+            border: 1px solid rgba(91, 122, 82, 0.08);
+            box-shadow: 0 16px 36px rgba(80, 63, 36, 0.08);
+        }
+        .favorite-card-image {
+            position: relative;
+            min-height: 180px;
+            background: linear-gradient(180deg, rgba(255, 249, 235, 0.86), rgba(247, 240, 226, 0.48));
+        }
+        .favorite-card-image img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            display: block;
+        }
+        .favorite-badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            padding: 0.45rem 0.75rem;
+            border-radius: 999px;
+            background: rgba(255, 249, 235, 0.96);
+            color: #7b6424;
+            font-size: 0.78rem;
+            font-weight: 800;
+        }
     </style>
 </head>
 <body class="dark:bg-gray-900 min-h-screen transition-colors duration-300">
@@ -78,16 +105,6 @@
         </div>
         
         <div class="flex items-center gap-4">
-            <label for="dark-toggle" class="flex items-center cursor-pointer">
-                <div class="relative">
-                    <input type="checkbox" id="dark-toggle" class="sr-only" onchange="toggleDarkMode()">
-                    <div class="block bg-gray-200 dark:bg-gray-700 w-12 h-7 rounded-full transition-colors border border-transparent dark:border-gray-600"></div>
-                    <div class="toggle-dot absolute left-1 top-1 bg-white dark:bg-blue-500 w-5 h-5 rounded-full shadow flex items-center justify-center text-[10px]">
-                        <span id="toggle-icon">☀️</span>
-                    </div>
-                </div>
-            </label>
-
             <!-- User Menu -->
             <div class="relative" id="user-menu-container">
                 <!-- Will be populated by JS -->
@@ -160,11 +177,11 @@
             </div>
 
             <div class="mt-5 flex gap-3">
-                <button class="profile-tab active flex-1 rounded-full py-4 px-6 font-bold text-lg transition-all">Tentang Saya</button>
-                <button class="profile-tab flex-1 rounded-full py-4 px-6 font-bold text-lg bg-[#45603f] text-white/90 transition-all">Favorit</button>
+                <button id="profile-about-tab" class="profile-tab active flex-1 rounded-full py-4 px-6 font-bold text-lg transition-all">Tentang Saya</button>
+                <button id="profile-favorite-tab" class="profile-tab flex-1 rounded-full py-4 px-6 font-bold text-lg transition-all">Favorit</button>
             </div>
 
-            <div class="mt-8 glass-card dark:bg-gray-800/90 rounded-[2rem] p-5 md:p-8">
+            <section id="profile-about-panel" class="mt-8 glass-card dark:bg-gray-800/90 rounded-[2rem] p-5 md:p-8">
                 <div>
                     <div class="flex items-center justify-between gap-4 mb-6">
                         <h3 class="text-2xl md:text-3xl font-extrabold text-primary dark:text-white">Tentang Saya</h3>
@@ -232,7 +249,20 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </section>
+
+            <section id="profile-favorite-panel" class="mt-8 hidden">
+                <div class="glass-card dark:bg-gray-800/90 rounded-[2rem] p-5 md:p-8">
+                    <div class="flex items-center justify-between gap-4 mb-6">
+                        <div>
+                            <h3 class="text-2xl md:text-3xl font-extrabold text-primary dark:text-white">Menu Favorit Saya</h3>
+                            <p class="mt-2 text-sm font-semibold text-gray-500 dark:text-gray-400">Semua resep yang pernah Anda favoritkan akan muncul di sini.</p>
+                        </div>
+                        <div class="rounded-2xl bg-primary/10 px-4 py-3 text-sm font-bold text-primary" id="favorite-total-badge">0 menu</div>
+                    </div>
+                    <div id="profile-favorite-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
+                </div>
+            </section>
 
             <div class="mt-6 glass-card dark:bg-gray-800/90 rounded-[2rem] p-5 md:p-7">
                 <form id="profile-form" class="space-y-5">
@@ -281,34 +311,8 @@
     </div>
 
     <script src="auth.js"></script>
+    <script src="index.js"></script>
     <script>
-        // Dark Mode Toggle
-        const html = document.documentElement;
-        const icon = document.getElementById('toggle-icon');
-        const checkbox = document.getElementById('dark-toggle');
-
-        function toggleDarkMode() {
-            if (checkbox.checked) {
-                html.classList.add('dark');
-                icon.innerText = '🌙';
-                localStorage.setItem('theme', 'dark');
-            } else {
-                html.classList.remove('dark');
-                icon.innerText = '☀️';
-                localStorage.setItem('theme', 'light');
-            }
-        }
-
-        function initTheme() {
-            const savedTheme = localStorage.getItem('theme');
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-                html.classList.add('dark');
-                checkbox.checked = true;
-                icon.innerText = '🌙';
-            }
-        }
-
         function getBannerStorageKey() {
             const currentUser = getCurrentUser();
             const userId = currentUser && currentUser.id ? currentUser.id : 'guest';
@@ -439,10 +443,65 @@
             heroBadge.classList.toggle('inline-flex', !!user.is_verified);
         }
 
+        function createProfileStars(level) {
+            const total = level === 'Mudah' ? 3 : level === 'Sedang' ? 4 : 5;
+            return Array.from({ length: 5 }, (_, index) => index < total ? '★' : '☆').join('');
+        }
+
+        function toggleProfilePanel(panel) {
+            const aboutTab = document.getElementById('profile-about-tab');
+            const favoriteTab = document.getElementById('profile-favorite-tab');
+            const aboutPanel = document.getElementById('profile-about-panel');
+            const favoritePanel = document.getElementById('profile-favorite-panel');
+
+            const showFavorites = panel === 'favorite';
+            aboutTab.classList.toggle('active', !showFavorites);
+            favoriteTab.classList.toggle('active', showFavorites);
+            aboutPanel.classList.toggle('hidden', showFavorites);
+            favoritePanel.classList.toggle('hidden', !showFavorites);
+        }
+
+        function renderProfileFavoriteRecipes() {
+            const grid = document.getElementById('profile-favorite-grid');
+            const badge = document.getElementById('favorite-total-badge');
+            if (!grid || !badge || typeof getBaseCatalogRecipes !== 'function' || typeof isRecipeFavorited !== 'function') {
+                return;
+            }
+
+            const favorites = getBaseCatalogRecipes().filter((recipe) => isRecipeFavorited(recipe));
+            badge.textContent = `${favorites.length} menu`;
+
+            if (!favorites.length) {
+                grid.innerHTML = `
+                    <article class="stat-card rounded-[1.7rem] p-6 text-center md:col-span-2">
+                        <strong class="block text-xl font-extrabold text-slate-800 dark:text-white">Belum ada menu favorit</strong>
+                        <p class="mt-3 text-sm font-semibold text-gray-500 dark:text-gray-400">Tambahkan favorit dari halaman utama agar resep yang Anda sukai muncul di sini.</p>
+                    </article>
+                `;
+                return;
+            }
+
+            grid.innerHTML = favorites.map((recipe) => `
+                <article class="favorite-card">
+                    <div class="favorite-card-image">
+                        <span class="favorite-badge">${recipe.negara}</span>
+                        <img src="${recipe.img}" alt="${recipe.nama}">
+                    </div>
+                    <div class="p-5">
+                        <h4 class="text-2xl font-extrabold text-slate-800 dark:text-white">${recipe.nama}</h4>
+                        <div class="mt-2 text-[#f4c552] text-lg tracking-[0.18em]">${createProfileStars(recipe.level)}</div>
+                        <p class="mt-3 text-sm leading-7 text-gray-500 dark:text-gray-400">${recipe.summary}</p>
+                        <div class="mt-5 flex items-center justify-between gap-3">
+                            <span class="text-sm font-bold text-primary">${recipe.tipe}</span>
+                            <a href="index.html#all-menu-showcase" class="rounded-full bg-primary px-4 py-2 text-xs font-extrabold text-white transition hover:bg-primary-dark">Buka Menu</a>
+                        </div>
+                    </div>
+                </article>
+            `).join('');
+        }
+
         // Check authentication and load user data
         window.onload = async function() {
-            initTheme();
-            
             // Check if user is logged in
             const token = localStorage.getItem('token');
             if (!token) {
@@ -491,6 +550,7 @@
                     document.getElementById('user-created').textContent = formattedCreatedDate;
                     applyProfileMeta(getStoredProfileMeta(), userName, formattedCreatedDate);
                     loadSavedAvatar();
+                    renderProfileFavoriteRecipes();
                 } else {
                     // Token expired
                     localStorage.removeItem('token');
@@ -690,6 +750,15 @@
             applyProfileMeta(meta, fallbackName, fallbackDate);
             toggleAboutEditMode(false);
             showAlert('success', 'Bio profil berhasil diperbarui!');
+        });
+
+        document.getElementById('profile-about-tab').addEventListener('click', function() {
+            toggleProfilePanel('about');
+        });
+
+        document.getElementById('profile-favorite-tab').addEventListener('click', function() {
+            toggleProfilePanel('favorite');
+            renderProfileFavoriteRecipes();
         });
     </script>
 </body>
