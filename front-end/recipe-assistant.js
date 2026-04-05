@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const input = document.getElementById('chat-input');
     const submitButton = document.getElementById('chat-submit');
     const feedback = document.getElementById('chat-feedback');
-    const promptContainer = document.getElementById('quick-prompts');
     const serverNoticeText = document.getElementById('server-notice-text');
     const historyList = document.getElementById('history-list');
     const tabButtons = document.querySelectorAll('.chat-tab');
@@ -23,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const endpoint = window.RECIPE_ASSISTANT_API_URL || 'http://127.0.0.1:8000/api/recipe-assistant';
     const history = [];
     const storageKey = 'masakYukRecipeAssistantHistory';
+    let scrollLockY = 0;
 
     const starterMessages = [
         {
@@ -34,8 +34,8 @@ document.addEventListener('DOMContentLoaded', () => {
             content: 'Contoh pertanyaan: "Saya punya tempe, telur, cabai, dan bawang. Bisa dibuat menu apa untuk 2 orang?"',
         },
     ];
-
     starterMessages.forEach((message) => appendMessage(message.role, message.content));
+    syncTextareaHeight();
     renderHistory();
 
     tabButtons.forEach((button) => {
@@ -48,17 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    promptContainer?.addEventListener('click', (event) => {
-        const target = event.target;
-
-        if (!(target instanceof HTMLButtonElement)) {
-            return;
-        }
-
-        input.value = target.textContent.trim();
-        input.focus();
-    });
-
     plusButton?.addEventListener('click', () => {
         const samples = [
             'Saya punya telur, kol, dan mie instan. Bisa dibuat menu apa?',
@@ -67,8 +56,11 @@ document.addEventListener('DOMContentLoaded', () => {
         ];
 
         input.value = samples[Math.floor(Math.random() * samples.length)];
+        syncTextareaHeight();
         input.focus();
     });
+
+    input.addEventListener('input', syncTextareaHeight);
 
     input.addEventListener('keydown', (event) => {
         if (event.key === 'Enter' && !event.shiftKey) {
@@ -102,6 +94,19 @@ document.addEventListener('DOMContentLoaded', () => {
         appendMessage('user', message);
         history.push({ role: 'user', content: message });
         input.value = '';
+        syncTextareaHeight();
+
+        const localReply = getLocalReply(message);
+
+        if (localReply) {
+            appendMessage('assistant', localReply);
+            history.push({ role: 'assistant', content: localReply });
+            persistConversation(message, localReply);
+            setLoading(false, 'CS menampilkan rekomendasi dari katalog Masak Yuk.');
+            updateServerNotice('Rekomendasi lokal aktif. CS bisa mengambil resep dari katalog yang tersedia di halaman ini.');
+            return;
+        }
+
         setLoading(true, 'CS sedang menyiapkan jawaban resep...');
 
         const loadingBubble = appendMessage('assistant', 'Sedang memproses pertanyaanmu...', true);
@@ -116,6 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({
                     message,
                     history: history.slice(0, -1),
+                    localContext: getAssistantContext(),
                 }),
             });
 
@@ -161,8 +167,19 @@ document.addEventListener('DOMContentLoaded', () => {
         feedback.textContent = message;
     }
 
+    function syncTextareaHeight() {
+        input.style.height = 'auto';
+        input.style.height = `${Math.min(input.scrollHeight, 180)}px`;
+    }
+
     function openChat() {
+        scrollLockY = window.scrollY || window.pageYOffset || 0;
         document.body.classList.add('chat-open');
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${scrollLockY}px`;
+        document.body.style.left = '0';
+        document.body.style.right = '0';
+        document.body.style.width = '100%';
         if (chatOverlay) {
             chatOverlay.hidden = false;
         }
@@ -174,9 +191,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function closeChat() {
         document.body.classList.remove('chat-open');
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.left = '';
+        document.body.style.right = '';
+        document.body.style.width = '';
         if (chatOverlay) {
             chatOverlay.hidden = true;
         }
+        window.scrollTo(0, scrollLockY);
     }
 
     function switchTab(targetId) {
@@ -197,6 +220,119 @@ document.addEventListener('DOMContentLoaded', () => {
         if (serverNoticeText) {
             serverNoticeText.textContent = message;
         }
+    }
+
+    function getAssistantContext() {
+        const favoriteRecipes = getFavoriteRecipes();
+        const catalogRecipes = getCatalogRecipes().slice(0, 12).map((recipe) => ({
+            nama: recipe.nama,
+            negara: recipe.negara,
+            tipe: recipe.tipe,
+            level: recipe.level,
+            summary: recipe.summary,
+        }));
+
+        return {
+            favoriteRecipes: favoriteRecipes.map((recipe) => ({
+                nama: recipe.nama,
+                negara: recipe.negara,
+                tipe: recipe.tipe,
+                level: recipe.level,
+                summary: recipe.summary,
+            })),
+            catalogRecipes,
+        };
+    }
+
+    function getLocalReply(message) {
+        const normalizedMessage = message.toLowerCase();
+
+        if (isFavoriteQuestion(normalizedMessage)) {
+            return buildFavoriteReply();
+        }
+
+        if (isCatalogQuestion(normalizedMessage)) {
+            return buildCatalogReply(normalizedMessage);
+        }
+
+        return '';
+    }
+
+    function isFavoriteQuestion(message) {
+        return /favorit|favorite|terfavorit|paling disukai|menu populer|resep populer/.test(message);
+    }
+
+    function isCatalogQuestion(message) {
+        return /menu apa|rekomendasi|katalog|dessert|pembuka|utama|penutup/.test(message);
+    }
+
+    function buildFavoriteReply() {
+        const favorites = getFavoriteRecipes();
+
+        if (!favorites.length) {
+            return 'Saat ini belum ada data favorit yang menonjol. Kamu bisa lihat section Resep Favorit di halaman utama, lalu tandai beberapa menu agar rekomendasinya makin akurat.';
+        }
+
+        const lines = favorites.slice(0, 4).map((recipe, index) => {
+            const favoriteCount = typeof recipe.favoriteCount === 'number' ? `, ${recipe.favoriteCount} favorit` : '';
+            return `${index + 1}. ${recipe.nama} (${recipe.negara}, ${recipe.tipe}, ${recipe.level}${favoriteCount})`;
+        });
+
+        return [
+            'Resep favorit yang ada di Masak Yuk saat ini:',
+            ...lines,
+            '',
+            'Kalau kamu mau, saya bisa lanjut rekomendasikan salah satu berdasarkan bahan yang kamu punya.',
+        ].join('\n');
+    }
+
+    function buildCatalogReply(message) {
+        const recipes = filterRecipesByIntent(message).slice(0, 4);
+
+        if (!recipes.length) {
+            return '';
+        }
+
+        const lines = recipes.map((recipe, index) => (
+            `${index + 1}. ${recipe.nama} (${recipe.negara}, ${recipe.tipe}, ${recipe.level})`
+        ));
+
+        return [
+            'Saya menemukan beberapa resep dari katalog Masak Yuk yang cocok:',
+            ...lines,
+            '',
+            'Kalau mau, sebutkan bahan yang kamu punya supaya saya pilihkan yang paling pas.',
+        ].join('\n');
+    }
+
+    function filterRecipesByIntent(message) {
+        let recipes = getCatalogRecipes();
+
+        if (message.includes('dessert') || message.includes('penutup')) {
+            recipes = recipes.filter((recipe) => recipe.tipe === 'Penutup');
+        } else if (message.includes('pembuka')) {
+            recipes = recipes.filter((recipe) => recipe.tipe === 'Pembuka');
+        } else if (message.includes('utama')) {
+            recipes = recipes.filter((recipe) => recipe.tipe === 'Utama');
+        }
+
+        return recipes;
+    }
+
+    function getFavoriteRecipes() {
+        if (typeof window.getTopFavoriteRecipes === 'function') {
+            return window.getTopFavoriteRecipes(4);
+        }
+
+        return [];
+    }
+
+    function getCatalogRecipes() {
+        if (typeof window.getBaseCatalogRecipes === 'function') {
+            return window.getBaseCatalogRecipes();
+        }
+
+        return [];
     }
 
     function persistConversation(question, answer) {

@@ -834,8 +834,9 @@ function renderAllMenuTabs() {
 function renderAllMenuGrid() {
     const grid = document.getElementById("all-menu-grid");
     const caption = document.getElementById("all-menu-caption");
+    const prevButton = document.getElementById("all-menu-prev-button");
     const moreButton = document.getElementById("all-menu-more-button");
-    if (!grid || !caption || !moreButton) return;
+    if (!grid || !caption || !prevButton || !moreButton) return;
 
     const recipes = getCatalogRecipes();
     const visibleRecipes = recipes.slice(0, allMenuState.visibleCount);
@@ -852,6 +853,8 @@ function renderAllMenuGrid() {
                 <p>Coba kata kunci lain atau ubah filter negara agar lebih banyak resep tampil.</p>
             </article>
         `;
+        prevButton.disabled = true;
+        prevButton.textContent = "Menu Sebelumnya";
         moreButton.disabled = true;
         moreButton.textContent = "Tidak Ada Menu Lagi";
         return;
@@ -888,7 +891,10 @@ function renderAllMenuGrid() {
 
     bindFavoriteButtons(grid);
 
+    const canGoBack = allMenuState.visibleCount > 8;
     const hasMore = allMenuState.visibleCount < recipes.length;
+    prevButton.disabled = !canGoBack;
+    prevButton.textContent = "Menu Sebelumnya";
     moreButton.disabled = !hasMore;
     moreButton.textContent = hasMore ? "Menu Berikutnya" : "Semua Menu Sudah Tampil";
 }
@@ -896,9 +902,10 @@ function renderAllMenuGrid() {
 function initAllMenuCatalog() {
     const searchForm = document.getElementById("all-menu-search-form");
     const searchInput = document.getElementById("all-menu-search-input");
+    const prevButton = document.getElementById("all-menu-prev-button");
     const moreButton = document.getElementById("all-menu-more-button");
 
-    if (!searchForm || !searchInput || !moreButton) return;
+    if (!searchForm || !searchInput || !prevButton || !moreButton) return;
 
     renderAllMenuTabs();
     renderAllMenuGrid();
@@ -918,6 +925,11 @@ function initAllMenuCatalog() {
 
     moreButton.addEventListener("click", () => {
         allMenuState.visibleCount += 8;
+        renderAllMenuGrid();
+    });
+
+    prevButton.addEventListener("click", () => {
+        allMenuState.visibleCount = Math.max(8, allMenuState.visibleCount - 8);
         renderAllMenuGrid();
     });
 }
@@ -972,3 +984,5 @@ function initRecipeExpert() {
 
 window.initRecipeExpert = initRecipeExpert;
 window.initAllMenuCatalog = initAllMenuCatalog;
+window.getTopFavoriteRecipes = getTopFavoriteRecipes;
+window.getBaseCatalogRecipes = getBaseCatalogRecipes;
