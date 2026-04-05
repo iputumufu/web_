@@ -69,6 +69,7 @@ const recipeExpertState = {
     selectedTaste: "",
     selectedDifficulty: "",
     selectedIngredients: new Set(),
+    ingredientSearchQuery: "",
     activeRecipe: null
 };
 
@@ -523,7 +524,24 @@ function renderIngredientGroups() {
     const container = document.getElementById("expert-ingredient-groups");
     if (!container) return;
 
-    const ingredients = Object.values(dataBahan).flat();
+    const searchQuery = recipeExpertState.ingredientSearchQuery.trim().toLowerCase();
+    let ingredients = Object.values(dataBahan).flat();
+    
+    if (searchQuery) {
+        ingredients = ingredients.filter((ingredient) =>
+            ingredient.toLowerCase().includes(searchQuery)
+        );
+    }
+
+    if (!ingredients.length && searchQuery) {
+        container.innerHTML = `
+            <div class="expert-ingredient-empty">
+                <p>Tidak ada bahan yang cocok dengan pencarian "${escapeHtml(searchQuery)}"</p>
+            </div>
+        `;
+        return;
+    }
+
     container.innerHTML = ingredients.map((ingredient) => `
         <button
             type="button"
@@ -682,35 +700,21 @@ function renderRecipeGrid() {
 
     emptyState.hidden = true;
     grid.innerHTML = recipes.map((recipe, index) => `
-        <article class="expert-menu-card">
-            <div class="expert-card-figure">
-                <span class="expert-card-country">${escapeHtml(recipe.negara)}</span>
-                <span class="expert-card-level ${getDifficultyClass(recipe.level)}">${escapeHtml(recipe.level)}</span>
-                ${recipe.isCommunity ? '<span class="expert-card-badge">Resep Komunitas</span>' : ""}
+        <article class="all-menu-card">
+            <div class="all-menu-card-image-wrap">
+                <span class="all-menu-card-country">${escapeHtml(recipe.negara)}</span>
+                ${recipe.isCommunity ? '<span class="all-menu-card-badge">Resep Baru</span>' : ""}
+                ${getFavoriteButtonMarkup(recipe, "small")}
                 <img src="${escapeHtml(recipe.img)}" alt="${escapeHtml(recipe.nama)}">
             </div>
-            <div class="expert-card-body">
-                <p class="expert-card-type">${escapeHtml(recipe.tipe)}</p>
-                <h3 class="expert-card-title">${escapeHtml(recipe.nama)}</h3>
-                <p class="expert-card-desc">${escapeHtml(recipe.summary)}</p>
-                <div class="expert-card-divider"></div>
-                <div class="expert-card-score-box">
-                    <span class="expert-card-score">
-                        <i class="fa-solid fa-chart-pie"></i>
-                        <span>${escapeHtml(recipe.score.label.toUpperCase())}</span>
-                    </span>
-                    <span class="expert-card-missing">${recipe.score.missing.length ? `Kurang ${recipe.score.missing.length} Bahan` : "Bahan Lengkap"}</span>
-                </div>
-                <p class="expert-card-needs"><strong>Butuh:</strong> ${escapeHtml(recipe.score.missing.slice(0, 3).join(", ") || recipe.bahan.slice(0, 3).join(", "))}${recipe.score.missing.length > 3 ? "..." : ""}</p>
-                <div class="expert-card-meta">
-                    <span class="expert-card-rasa">
-                        <i class="fa-solid fa-sparkles"></i>
-                        <span>${escapeHtml(recipe.rasa)}</span>
-                    </span>
-                    <div class="all-menu-card-actions">
-                        ${getFavoriteButtonMarkup(recipe, "inline")}
-                        <button type="button" class="expert-card-action" data-open-recipe-index="${index}">Lihat Resep</button>
-                    </div>
+            <div class="all-menu-card-content">
+                <h3>${escapeHtml(recipe.nama)}</h3>
+                <div class="all-menu-card-stars" aria-hidden="true">${createStars(recipe.level)}</div>
+                <p>${escapeHtml(recipe.summary)}</p>
+                <p class="expert-cook-label"><strong>Cocok ${escapeHtml(String(recipe.score.percent || 0))}%</strong> | Kurang ${recipe.score.missing.length} Bahan</p>
+                <div class="all-menu-card-meta">
+                    <span class="all-menu-card-price">${escapeHtml(recipe.tipe)}</span>
+                    <button type="button" class="all-menu-card-action" data-open-recipe-index="${index}">Lihat Resep</button>
                 </div>
             </div>
         </article>
@@ -939,6 +943,7 @@ function initRecipeExpert() {
     const closeButton = document.getElementById("expert-modal-close");
     const backdrop = document.getElementById("expert-recipe-backdrop");
     const ingredientsContainer = document.getElementById("expert-ingredient-groups");
+    const ingredientSearchInput = document.getElementById("expert-ingredient-search-input");
 
     if (!resetButton || !ingredientsContainer) return;
 
@@ -951,12 +956,24 @@ function initRecipeExpert() {
     renderDifficultyTabs();
     renderRecipeGrid();
 
+    if (ingredientSearchInput) {
+        ingredientSearchInput.addEventListener("input", () => {
+            recipeExpertState.ingredientSearchQuery = ingredientSearchInput.value;
+            renderIngredientGroups();
+        });
+    }
+
     resetButton.addEventListener("click", () => {
         recipeExpertState.selectedIngredients.clear();
         recipeExpertState.activeCountry = "";
         recipeExpertState.selectedType = "";
         recipeExpertState.selectedTaste = "";
         recipeExpertState.selectedDifficulty = "";
+        recipeExpertState.ingredientSearchQuery = "";
+
+        if (ingredientSearchInput) {
+            ingredientSearchInput.value = "";
+        }
 
         renderSelectedIngredients();
         renderIngredientGroups();

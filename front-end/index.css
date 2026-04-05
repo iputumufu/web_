@@ -586,6 +586,33 @@ nav a:hover {
     margin: 1.25rem 0 1.5rem;
 }
 
+.expert-ingredient-search-form {
+    margin-bottom: 1.5rem;
+}
+
+#expert-ingredient-search-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid rgba(87, 117, 78, 0.2);
+    border-radius: 0.5rem;
+    font-size: 0.95rem;
+    font-family: inherit;
+    background: rgba(255, 255, 255, 0.98);
+    color: #1a1a1a;
+    transition: all 0.3s ease;
+}
+
+#expert-ingredient-search-input::placeholder {
+    color: #999;
+}
+
+#expert-ingredient-search-input:focus {
+    outline: none;
+    border-color: #57754E;
+    box-shadow: 0 0 0 3px rgba(87, 117, 78, 0.1);
+    background: #fff;
+}
+
 .expert-selected-chip {
     display: inline-flex;
     align-items: center;
@@ -644,6 +671,22 @@ nav a:hover {
     font-size: 1rem;
     font-weight: 800;
     line-height: 1.2;
+}
+
+.expert-ingredient-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 2rem 1rem;
+    color: #999;
+    font-size: 0.95rem;
+}
+
+.expert-ingredient-empty p {
+    margin: 0;
+}
+
+.expert-ingredient-groups:has(.expert-ingredient-empty) {
+    gap: 0;
 }
 
 .expert-ingredient-chip.active {
@@ -766,8 +809,8 @@ nav a:hover {
 
 .expert-menu-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.3rem;
 }
 
 .expert-menu-card {
@@ -1201,6 +1244,19 @@ nav a:hover {
     background: #fff9eb;
     color: #7b6424;
     border: 1px solid rgba(244, 197, 82, 0.42);
+}
+
+.expert-cook-label {
+    margin: 0 !important;
+    font-size: 0.95rem;
+    color: #6b7280;
+    line-height: 1.5;
+    min-height: auto !important;
+}
+
+.expert-cook-label strong {
+    color: #d97706;
+    font-weight: 800;
 }
 
 .all-menu-footer {
