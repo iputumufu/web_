@@ -269,8 +269,8 @@ nav a:hover {
 }
 
 .classic-arrow.active {
-    background: #f4c552;
-    color: #4e3d12;
+    background: #597750;
+    color: white;
 }
 
 .classic-dish-grid {
@@ -309,8 +309,8 @@ nav a:hover {
 }
 
 .menu-favorite-button.active {
-    background: #f4c552;
-    color: #5b4510;
+    background: #597750;
+    color: white;
     box-shadow: 0 10px 22px rgba(244, 197, 82, 0.22);
 }
 
@@ -367,7 +367,7 @@ nav a:hover {
     justify-content: center;
     gap: 0.18rem;
     margin-bottom: 0.65rem;
-    color: #f4c552;
+    color: #597750;
 }
 
 .classic-dish-card p {
@@ -461,8 +461,8 @@ nav a:hover {
 
 .classic-service-button {
     padding: 0.85rem 1.3rem;
-    background: #f4c552;
-    color: #4e3d12;
+    background: #597750;
+    color: white;
 }
 
 .expert-menu-shell {
@@ -1078,8 +1078,8 @@ nav a:hover {
 .all-menu-search button {
     height: 3.35rem;
     padding: 0 1.4rem;
-    background: #f4c552;
-    color: #5b4510;
+    background: #597750;
+    color: white;
     box-shadow: 0 12px 24px rgba(244, 197, 82, 0.24);
 }
 
@@ -1102,8 +1102,8 @@ nav a:hover {
 .all-menu-tab.active,
 .all-menu-search button:hover,
 .all-menu-more-button:hover {
-    background: #f4c552;
-    color: #503f14;
+    background: #597750;
+    color: white;
 }
 
 .all-menu-tab:hover,
@@ -1185,8 +1185,8 @@ nav a:hover {
 }
 
 .all-menu-card .menu-favorite-button.small.active {
-    background: #f4c552;
-    color: #5b4510;
+    background: #597750;
+    color: white;
 }
 
 .all-menu-card .menu-favorite-button.small .favorite-count {
@@ -1213,7 +1213,7 @@ nav a:hover {
     justify-content: center;
     gap: 0.18rem;
     margin-bottom: 0.6rem;
-    color: #f4c552;
+    color: #597750;
 }
 
 .all-menu-card p {
